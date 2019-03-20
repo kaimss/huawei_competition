@@ -27,4 +27,15 @@
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="C:\huawei\data1\car_process.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="C:\huawei\data1\cross_process.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="C:\huawei\data1\road_process.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

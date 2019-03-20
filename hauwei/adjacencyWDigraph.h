@@ -5,6 +5,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <vector>
 
 #include "edge.h"
 
@@ -23,7 +24,8 @@ public:
 private:
 	int numVertices;
 	int numEdges;
-	edge ***edgesets;
+	
+	edge **edgesets;
 
 	ifstream car;	//车辆
 	ifstream crossAndroad;
@@ -31,13 +33,16 @@ private:
 
 adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
 {
+	if (numOfVertices < 2)
+		throw UNKNOWN_PROBLEM;
 	//构造函数
 	numVertices = numOfVertices;
 	numEdges = 0;
+	edge *insert = NULL;
 	try {
-		edgesets = new edge**[numVertices + 1];
+		edgesets = new edge*[numVertices + 1];
 		for (int i = 0; i <= numVertices; i++)
-			edgesets[i] = new edge*[numVertices + 1];
+			edgesets[i] = new edge[numVertices + 1];
 	}
 	catch (bad_alloc)
 	{
@@ -49,11 +54,13 @@ adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
 adjacencyWDigraph::~adjacencyWDigraph()
 {
 	//析构函数
+	
 	for (int i = 0; i <= numVertices; i++)
 		delete[] edgesets[i];
 
 	delete[] edgesets;
 	edgesets = NULL;
+	
 }
 
 bool adjacencyWDigraph::iniRoad(const char* fileName)
@@ -84,14 +91,20 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 		crossAndroad >> infile;
 		single = std::stoi(infile);
 
-		insert = new edge(id, channel, length, maxSpeed);
-		//cout << id << "\t" << channel << "\t" << length << "\t" << maxSpeed << endl;
-		edgesets[start][dest] = insert;
+		insert = &edgesets[start][dest];
+		insert->id = id;
+		insert->length = length;
+		insert->maxSpeed = maxSpeed;
+		insert->channel = channel;
+
 		numEdges++;
-		if (single == 0)
+		if (single == 1)
 		{
-			insert = new edge(id, channel, length, maxSpeed);
-			edgesets[dest][start] = insert;
+			insert = &edgesets[dest][start];
+			insert->id = id;
+			insert->length = length;
+			insert->maxSpeed = maxSpeed;
+			insert->channel = channel;
 			numEdges++;
 		}
 	}

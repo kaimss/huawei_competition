@@ -21,6 +21,8 @@ public:
 
 	//初始化道路数据，参数一为文件路径，参数二是读写长度
 	bool iniRoad(const char* fileName);	
+	void output();//输出矩阵的长度
+	void allpairs(int **, int **);//任意两点之间的最短路径
 private:
 	int numVertices;
 	int numEdges;
@@ -111,6 +113,65 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 	crossAndroad.close();
 	return true;
 }
+void adjacencyWDigraph::output()
+{
+	for (int i = 1; i <= numVertices; i++)
+	{
+		for (int j = 1; j <= numVertices; j++)
+			cout << edgesets[i][j].length << " ";
+		cout << endl;
+	}
+}
+void adjacencyWDigraph::allpairs(int **c, int **kay)
+{
+	for (int i = 1; i <= numVertices; i++)
+	{
+		for (int j = 1; j <= numVertices; j++)
+		{
+			c[i][j] = edgesets[i][j].length;
+			kay[i][j] = 0;
+		}
+	}
+	for (int i = 1; i <= numVertices; i++)
+	{
+		c[i][i] = 0;
+	}
+	for (int k = 1; k <= numVertices; k++)
+		for (int i = 1; i <= numVertices; i++)
+			for (int j = 1; j <= numVertices; j++)
+				if (c[i][k] != INF && c[k][j] != INF && (c[i][j] == INF || c[i][j] > c[i][k] + c[k][j]))
+				{
+					c[i][j] = c[i][k] + c[k][j];
+					kay[i][j] = k;
+				}
 
+}
+//int *adjacencyWDigraph::findPath(int theSource ,int theDestitination)
+//{//寻找一条从theSource到theDestination的最短路径
+
+//}
+void outputPath(int **kay, int i, int j)
+{
+	if (i == j)
+		return;
+	if (kay[i][j] == 0)
+		cout << j << " ";
+	else
+	{
+		outputPath(kay, i, kay[i][j]);
+		outputPath(kay, kay[i][j], j);
+	}
+}
+void outputPath(int **c, int **kay, int i, int j)
+{
+	if (c[i][j] == 1000)
+		cout << "there is  no path from " << i << "to" << j << endl;
+	else
+	{
+		cout << "the path is" << i << " ";
+		outputPath(kay, i, j);
+		cout << endl;
+	}
+}
 
 #endif

@@ -48,13 +48,13 @@ struct edge
 		return edge(a.id, a.channel, a.length + b.length, a.maxSpeed);
 	}
 	//重载结构体＋,edge=edge_a-edge_b
-	//目前仅将length相加，其他的量保持与a相同
+	//目前仅将length相减，其他的量保持与a相同
 	friend edge operator - (const edge &a, const edge &b)
 	{
 		return edge(a.id, a.channel, a.length - b.length, a.maxSpeed);
 	}
 
-	//重载输出，即cout<<node;
+	//重载输出，即cout<<edge;
 	friend ostream& operator << (ostream &out, const edge &p)
 	{
 		out << "(" << p.id << ", " << p.channel << ", " << p.length << ", " << p.maxSpeed << ")\n";

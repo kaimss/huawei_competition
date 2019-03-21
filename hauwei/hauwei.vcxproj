@@ -126,6 +126,7 @@
   <ItemGroup>
     <ClInclude Include="adjacencyWDigraph.h" />
     <ClInclude Include="car.h" />
+    <ClInclude Include="carArray.h" />
     <ClInclude Include="edge.h" />
   </ItemGroup>
   <ItemGroup>

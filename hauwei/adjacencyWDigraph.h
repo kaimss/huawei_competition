@@ -139,7 +139,7 @@ void adjacencyWDigraph::allpairs(int **c, int **kay)
 	for (int k = 1; k <= numVertices; k++)
 		for (int i = 1; i <= numVertices; i++)
 			for (int j = 1; j <= numVertices; j++)
-				if (c[i][k] != 1000 && c[k][j] != 1000 && (c[i][j] ==1000 || c[i][j] > c[i][k] + c[k][j]))
+				if (c[i][k] != INF && c[k][j] != INF && (c[i][j] == INF || c[i][j] > c[i][k] + c[k][j]))
 				{
 					c[i][j] = c[i][k] + c[k][j];
 					kay[i][j] = k;

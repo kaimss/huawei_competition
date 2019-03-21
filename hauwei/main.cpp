@@ -2,28 +2,28 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <cassert>
-#include <vector>
+#include <cstdlib>
+#include<cstdio
 #include "adjacencyWDigraph.h"
 using namespace std;
 void readTxt(string file)
-{//ÖðÐÐ¶ÁÈë
+{//é€è¡Œè¯»å…¥
 	ifstream infile;
-	infile.open(file.data());   //½«ÎÄ¼þÁ÷¶ÔÏóÓëÎÄ¼þÁ¬½ÓÆðÀ´ 
-	assert(infile.is_open());   //ÈôÊ§°Ü,ÔòÊä³ö´íÎóÏûÏ¢,²¢ÖÕÖ¹³ÌÐòÔËÐÐ 
+	infile.open(file.data());   //å°†æ–‡ä»¶æµå¯¹è±¡ä¸Žæ–‡ä»¶è¿žæŽ¥èµ·æ¥ 
+	assert(infile.is_open());   //è‹¥å¤±è´¥,åˆ™è¾“å‡ºé”™è¯¯æ¶ˆæ¯,å¹¶ç»ˆæ­¢ç¨‹åºè¿è¡Œ 
 
 	string s;
 	while (getline(infile, s))
 	{
 		cout << s << endl;
 	}
-	infile.close();             //¹Ø±ÕÎÄ¼þÊäÈëÁ÷ 
+	infile.close();             //å…³é—­æ–‡ä»¶è¾“å…¥æµ 
 }
 void readTxt2(string file)
-{//Öð¸ö×Ö·û¶ÁÈë£¨ºöÂÔ¿Õ¸ñÓë»Ø³µ£©
+{//é€ä¸ªå­—ç¬¦è¯»å…¥ï¼ˆå¿½ç•¥ç©ºæ ¼ä¸Žå›žè½¦ï¼‰
 	ifstream infile;
-	infile.open(file.data());   //½«ÎÄ¼þÁ÷¶ÔÏóÓëÎÄ¼þÁ¬½ÓÆðÀ´ 
-	assert(infile.is_open());   //ÈôÊ§°Ü,ÔòÊä³ö´íÎóÏûÏ¢,²¢ÖÕÖ¹³ÌÐòÔËÐÐ 
+	infile.open(file.data());   //å°†æ–‡ä»¶æµå¯¹è±¡ä¸Žæ–‡ä»¶è¿žæŽ¥èµ·æ¥ 
+	assert(infile.is_open());   //è‹¥å¤±è´¥,åˆ™è¾“å‡ºé”™è¯¯æ¶ˆæ¯,å¹¶ç»ˆæ­¢ç¨‹åºè¿è¡Œ 
 
 	char c;
 	while (!infile.eof())
@@ -32,13 +32,13 @@ void readTxt2(string file)
 		cout << c;
 
 	}
-	infile.close();             //¹Ø±ÕÎÄ¼þÊäÈëÁ÷ 
+	infile.close();             //å…³é—­æ–‡ä»¶è¾“å…¥æµ 
 }
 void readTxt3(string file)
-{//Öð¸ö×Ö·û¶ÁÈë£¨°üÀ¨¿Õ¸ñÓë»Ø³µ£©
+{//é€ä¸ªå­—ç¬¦è¯»å…¥ï¼ˆåŒ…æ‹¬ç©ºæ ¼ä¸Žå›žè½¦ï¼‰
 	ifstream infile;
-	infile.open(file.data());   //½«ÎÄ¼þÁ÷¶ÔÏóÓëÎÄ¼þÁ¬½ÓÆðÀ´ 
-	assert(infile.is_open());   //ÈôÊ§°Ü,ÔòÊä³ö´íÎóÏûÏ¢,²¢ÖÕÖ¹³ÌÐòÔËÐÐ 
+	infile.open(file.data());   //å°†æ–‡ä»¶æµå¯¹è±¡ä¸Žæ–‡ä»¶è¿žæŽ¥èµ·æ¥ 
+	assert(infile.is_open());   //è‹¥å¤±è´¥,åˆ™è¾“å‡ºé”™è¯¯æ¶ˆæ¯,å¹¶ç»ˆæ­¢ç¨‹åºè¿è¡Œ 
 
 	char c;
 	infile >> noskipws;
@@ -48,7 +48,7 @@ void readTxt3(string file)
 		cout << c;
 
 	}
-	infile.close();             //¹Ø±ÕÎÄ¼þÊäÈëÁ÷ 
+	infile.close();             //å…³é—­æ–‡ä»¶è¾“å…¥æµ 
 }
 int main()
 {
@@ -74,6 +74,20 @@ int main()
 
 	adjacencyWDigraph graph(64);
 	graph.iniRoad("data1//road_process.txt");
+  
+	//graph.output();
 
+	int **a, **b;
+	a = new int*[65];
+	b = new int*[65];
+	for (int i = 0; i <= 64; i++)
+		{
+			a[i] = new int[65];
+			b[i] = new int[65];
+		}
+	graph.allpairs(a,b);
+	outputPath(a, b, 39, 18);
+	cout << a[39][18];
+  
 	return 0;
 }

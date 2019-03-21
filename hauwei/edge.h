@@ -1,60 +1,60 @@
 #pragma once
 #ifndef _EDGE_
 #define _EDGE_
-//¿É²»¿ÉÒÔ½«includeµÄÎÄ¼ş·Åµ½Í¬Ò»Í·ÎÄ¼şÖĞ£¬·ÀÖ¹ÖØ¸´±àÒë£¿
-#include <iostream>
-using namespace std;
+
+const int INF = 0x6f6f6f6f;
+
 struct edge
 {
-	int id;			//µÀÂ·±àºÅ
-	int channel;	//Í¨µÀÊıÁ¿
-	int length;		//µÀÂ·³¤¶È
-	int maxSpeed;	//×î´óËÙ¶È
+	int id;			//é“è·¯ç¼–å·
+	int channel;	//é€šé“æ•°é‡
+	int length;		//é“è·¯é•¿åº¦
+	int maxSpeed;	//æœ€å¤§é€Ÿåº¦
 
-	edge() :id(0),channel(0), length(0), maxSpeed(0) {}
+	edge() :id(0),channel(0), length(INF), maxSpeed(0) {}
 
 	edge(int theId, int theChannel, int theLength, int topSpeed) :
 		id(theId), channel(theChannel), length(theLength), maxSpeed(topSpeed) {}
 
-	//ÖØÔØ½á¹¹Ìå±È½Ï£¨Á½¸ö²ÎÊı£©
+	//é‡è½½ç»“æ„ä½“æ¯”è¾ƒï¼ˆä¸¤ä¸ªå‚æ•°ï¼‰
 	friend bool operator >(const edge &a, const edge &b)
 	{
 		return a.length > b.length;
 	}
-	//ÖØÔØ½á¹¹Ìå±È½Ï£¨Á½¸ö²ÎÊı£©
+	//é‡è½½ç»“æ„ä½“æ¯”è¾ƒï¼ˆä¸¤ä¸ªå‚æ•°ï¼‰
 	friend bool operator >=(const edge &a, const edge &b)
 	{
 		return a.length >= b.length;
 	}
-	//ÖØÔØ½á¹¹Ìå±È½Ï£¨Á½¸ö²ÎÊı£©
+	//é‡è½½ç»“æ„ä½“æ¯”è¾ƒï¼ˆä¸¤ä¸ªå‚æ•°ï¼‰
 	friend bool operator <(const edge &a, const edge &b)
 	{
 		return a.length < b.length;
 	}
-	//ÖØÔØ½á¹¹Ìå±È½Ï£¨Á½¸ö²ÎÊı£©
+	//é‡è½½ç»“æ„ä½“æ¯”è¾ƒï¼ˆä¸¤ä¸ªå‚æ•°ï¼‰
 	friend bool operator <=(const edge &a, const edge &b)
 	{
 		return a.length <= b.length;
 	}
-	//ÖØÔØ½á¹¹Ìå±È½Ï£¨Á½¸ö²ÎÊı£©
+	//é‡è½½ç»“æ„ä½“æ¯”è¾ƒï¼ˆä¸¤ä¸ªå‚æ•°ï¼‰
 	friend bool operator ==(const edge &a, const edge &b)
 	{
 		return a.length == b.length;
 	}
-	//ÖØÔØ½á¹¹Ìå£«,edge=edge_a+edge_b
-	//Ä¿Ç°½ö½«lengthÏà¼Ó£¬ÆäËûµÄÁ¿±£³ÖÓëaÏàÍ¬
+	//é‡è½½ç»“æ„ä½“ï¼‹,edge=edge_a+edge_b
+	//ç›®å‰ä»…å°†lengthç›¸åŠ ï¼Œå…¶ä»–çš„é‡ä¿æŒä¸aç›¸åŒ
 	friend edge operator + (const edge &a, const edge &b)
 	{
 		return edge(a.id, a.channel, a.length + b.length, a.maxSpeed);
 	}
-	//ÖØÔØ½á¹¹Ìå£«,edge=edge_a-edge_b
-	//Ä¿Ç°½ö½«lengthÏà¼Ó£¬ÆäËûµÄÁ¿±£³ÖÓëaÏàÍ¬
+	//é‡è½½ç»“æ„ä½“ï¼‹,edge=edge_a-edge_b
+	//ç›®å‰ä»…å°†lengthç›¸åŠ ï¼Œå…¶ä»–çš„é‡ä¿æŒä¸aç›¸åŒ
 	friend edge operator - (const edge &a, const edge &b)
 	{
 		return edge(a.id, a.channel, a.length - b.length, a.maxSpeed);
 	}
 
-	//ÖØÔØÊä³ö£¬¼´cout<<node;
+	//é‡è½½è¾“å‡ºï¼Œå³cout<<node;
 	friend ostream& operator << (ostream &out, const edge &p)
 	{
 		out << "(" << p.id << ", " << p.channel << ", " << p.length << ", " << p.maxSpeed << ")\n";

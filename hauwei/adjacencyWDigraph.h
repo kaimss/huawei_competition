@@ -21,6 +21,7 @@ public:
 
 	//初始化道路数据，参数一为文件路径，参数二是读写长度
 	bool iniRoad(const char* fileName);	
+	bool iniRoad2(const char* fileName);
 	void output();//输出矩阵的长度
 	void allpairs(int **, int **);//任意两点之间的最短路径
 private:
@@ -109,6 +110,79 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 			insert->channel = channel;
 			numEdges++;
 		}
+	}
+	crossAndroad.close();
+	return true;
+}
+bool adjacencyWDigraph::iniRoad2(const char* fileName)
+{
+	//初始化函数，将读入的文件填写到图中
+	string infile;
+	char str[10], one;
+	crossAndroad.open(fileName, ios::in | ios::out);
+	if (!crossAndroad.is_open()) {
+		cout << "文件打开错误" << endl;
+		return false;
+	}
+	int id, channel, start, dest, length, maxSpeed, single;
+	edge *insert;
+	while (!crossAndroad.eof())
+	{
+		one = crossAndroad.get();//读掉左括号或者'#'
+		if (one == '#')//如果读到的是'#'则忽略这一行
+			getline(crossAndroad, infile);
+		else//否则按格式读取
+		{
+			crossAndroad.getline(str, 10, ',');
+			infile = str;
+			id = std::stoi(infile);
+
+			crossAndroad.getline(str, 10, ',');
+			infile = str;
+			length = std::stoi(infile);
+
+			crossAndroad.getline(str, 10, ',');
+			infile = str;
+			maxSpeed = std::stoi(infile);
+
+			crossAndroad.getline(str, 10, ',');
+			infile = str;
+			channel = std::stoi(infile);
+
+			crossAndroad.getline(str, 10, ',');
+			infile = str;
+			start = std::stoi(infile);
+
+			crossAndroad.getline(str, 10, ',');
+			infile = str;
+			dest = std::stoi(infile);
+
+			crossAndroad.getline(str, 10, ')');
+			infile = str;
+			single = std::stoi(infile);
+
+			one = crossAndroad.get();//读掉换行符
+			
+			//cout << id << length << maxSpeed << channel << start << dest << single << endl;
+
+			insert = &edgesets[start][dest];
+			insert->id = id;
+			insert->length = length;
+			insert->maxSpeed = maxSpeed;
+			insert->channel = channel;
+
+			numEdges++;
+			if (single == 1)
+			{
+				insert = &edgesets[dest][start];
+				insert->id = id;
+				insert->length = length;
+				insert->maxSpeed = maxSpeed;
+				insert->channel = channel;
+				numEdges++;
+			}
+		}
+		
 	}
 	crossAndroad.close();
 	return true;

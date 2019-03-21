@@ -125,9 +125,9 @@
     <ClInclude Include="edge.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="C:\huawei\data1\car_process.txt" />
-    <Text Include="C:\huawei\data1\cross_process.txt" />
-    <Text Include="C:\huawei\data1\road_process.txt" />
+    <Text Include="data1\car_process.txt" />
+    <Text Include="data1\cross_process.txt" />
+    <Text Include="data1\road_process.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

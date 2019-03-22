@@ -16,11 +16,13 @@ int main()
 {
 	adjacencyWDigraph graph(64);
 	graph.iniRoad("data1//road_process.txt");
+	//未处理文件读取
 	//graph.iniRoad2("data2//road.txt");
 	//graph.output();
 
 	carArray cars;
 	cars.iniCar("data1//car_process.txt");
+	//未处理文件读取
 	//cars.iniCar2("data2//car.txt");
 	
 
@@ -35,14 +37,13 @@ int main()
 	graph.allpairs(a,b);
 
 	int index = 88;
-	//����index�ų������·������·�����к͵�·����
+	//计算 index 号车的最短路径所经过的路口序列和道路序列
 	outputPath(a, b, cars.getCar(index).from, cars.getCar(index).to, cars.getCar(index).path, cars.getCar(index).dot, graph);
-	//���Ե��һ���
+	//尝试调度一辆车
 	dispatch(graph, cars.getCar(index));
   
 	for (int i = 0; i < 10240; i++)
 		graph.outputPathFile(a,b,cars.getCar(i).id,cars.getCar(i).planTime,cars.getCar(i).from,cars.getCar(i).to);
 	
-	 system("Pause");
 	return 0;
 }

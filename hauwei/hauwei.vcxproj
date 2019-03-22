@@ -128,6 +128,7 @@
     <ClInclude Include="car.h" />
     <ClInclude Include="carArray.h" />
     <ClInclude Include="edge.h" />
+    <ClInclude Include="testdispatch.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="C:\huawei\data1\car_process.txt" />

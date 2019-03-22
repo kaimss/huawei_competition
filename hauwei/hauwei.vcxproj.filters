@@ -32,6 +32,9 @@
     <ClInclude Include="carArray.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="testdispatch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="C:\huawei\data1\car_process.txt">

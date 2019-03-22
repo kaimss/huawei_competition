@@ -108,6 +108,12 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 			insert->channel = channel;
 			numEdges++;
 
+			vector<int> temp(length + 1, 0);
+			for (int i = 0; i <= channel; i++)
+			{
+				insert->road.push_back(temp);
+			}
+
 		}
 	}
 	crossAndroad.close();
@@ -171,6 +177,11 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 			insert->channel = channel;
 
 			numEdges++;
+			vector<int> temp(length + 1, 0);
+			for (int i = 0; i <= channel; i++)
+			{
+				insert->road.push_back(temp);
+			}
 			if (single == 1)
 			{
 				insert = &edgesets[dest][start];
@@ -179,6 +190,11 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 				insert->maxSpeed = maxSpeed;
 				insert->channel = channel;
 				numEdges++;
+				vector<int> temp(length + 1, 0);
+				for (int i = 0; i <= channel; i++)
+				{
+					insert->road.push_back(temp);
+				}
 			}
 		}
 		

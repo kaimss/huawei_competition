@@ -189,7 +189,6 @@ void adjacencyWDigraph::outputPathFile(int **kay, int i, int j,int k)
 				out << j << ")";
 			else
 				out << j << ",";
-
 		}
 		else
 		{
@@ -205,7 +204,7 @@ void adjacencyWDigraph::outputPathFile(int **c, int **kay, int k,int h,int i, in
 	if (out)
 	{
 		if (c[i][j] == INF)
-			out << "there is  no path from " << i << "to" << j << endl;
+			out << "there is no path from " << i << "to" << j << endl;
 		else
 		{
 			out <<"("<<k<<","<< h<<",";
@@ -219,22 +218,18 @@ void adjacencyWDigraph::outputPathFile(int **c, int **kay, int k,int h,int i, in
 
 void adjacencyWDigraph::floyid(int **a,int **b)
 {
-	 out.open("out.txt",ios::app);
+	out.open("answer.txt",ios::app);
 	if (out)
 	{
-		//out << "This is a line.\n";
-		//out << "This is another line.\n";
 		for (int i = 1; i <= numVertices; i++)
 		{
 			for (int j = 1; j <= numVertices; j++)
 			{
-				outputPathFile(a, b,i,i, i, j);
-				//out << a[i][j]<<" ";
+				outputPathFile(a, b, i, i, i, j);
 			}
 			out << "\n";
 		}
 		out.close();
-		//cout << "±£´æ³É¹¦";
     }
 }
 

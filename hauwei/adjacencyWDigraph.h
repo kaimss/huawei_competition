@@ -6,7 +6,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-
+#include <fstream>
 #include "edge.h"
 
 #define UNKNOWN_PROBLEM 1
@@ -23,10 +23,13 @@ public:
 	bool iniRoad(const char* fileName);	
 	void output();//输出矩阵的长度
 	void allpairs(int **, int **);//任意两点之间的最短路径
+	void floyid(int **,int **);
+	void outputPathFile(int **,int **,int i,int h,int k,int j);
+	void outputPathFile(int **, int j, int i,int k);
 private:
 	int numVertices;
 	int numEdges;
-	
+	ofstream out;
 	edge **edgesets;
 
 	ifstream car;	//车辆
@@ -172,6 +175,67 @@ void outputPath(int **c, int **kay, int i, int j)
 		outputPath(kay, i, j);
 		cout << endl;
 	}
+}
+void adjacencyWDigraph::outputPathFile(int **kay, int i, int j,int k)
+{
+	if (i == j)
+		return;
+	// out.open("out.txt",ios::app);
+	if (out)
+	{
+		if (kay[i][j] == 0)
+		{
+			if (j == k)
+				out << j << ")";
+			else
+				out << j << ",";
+
+		}
+		else
+		{
+			outputPathFile(kay, i, kay[i][j],k);
+			outputPathFile(kay, kay[i][j], j,k);
+		}
+		//out.close();
+	}
+}
+void adjacencyWDigraph::outputPathFile(int **c, int **kay, int k,int h,int i, int j)
+{
+	 out.open("out.txt",ios::app);
+	if (out)
+	{
+		if (c[i][j] == INF)
+			out << "there is  no path from " << i << "to" << j << endl;
+		else
+		{
+			out <<"("<<k<<","<< h<<",";
+			out  << i << ",";
+			outputPathFile(kay, i, j,j);
+			out << "\n";
+		}
+		out.close();
+	}
+}
+
+void adjacencyWDigraph::floyid(int **a,int **b)
+{
+	 out.open("out.txt",ios::app);
+	if (out)
+	{
+		//out << "This is a line.\n";
+		//out << "This is another line.\n";
+		for (int i = 1; i <= numVertices; i++)
+		{
+			for (int j = 1; j <= numVertices; j++)
+			{
+				outputPathFile(a, b,i,i, i, j);
+				//out << a[i][j]<<" ";
+			}
+			out << "\n";
+		}
+		out.close();
+		//cout << "保存成功";
+    }
 }
 
 #endif

@@ -10,9 +10,7 @@
 #include "testdispatch.h"
 using namespace std;
 
-
-
-void dispatch(adjacencyWDigraph&, car&);//ÔÝÊ±µÄµ÷¶Èº¯Êý
+void dispatch(adjacencyWDigraph&, car&);//ï¿½ï¿½Ê±ï¿½Äµï¿½Èºï¿½ï¿½ï¿½
 
 int main()
 {
@@ -35,23 +33,16 @@ int main()
 		b[i] = new int[65];
 	}
 	graph.allpairs(a,b);
-	//outputPath(a, b, 1, 36);
-	//cout << a[1][36];
-
 
 	int index = 88;
-	//¼ÆËãindexºÅ³µµÄ×î¶ÌÂ·¾¶Ëù¾­¹ýµÄÂ·¿ÚÐòÁÐºÍµÀÂ·ÐòÁÐ
+	//ï¿½ï¿½ï¿½ï¿½indexï¿½Å³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â·ï¿½ï¿½ï¿½ï¿½ï¿½ÐºÍµï¿½Â·ï¿½ï¿½ï¿½ï¿½
 	outputPath(a, b, cars.getCar(index).from, cars.getCar(index).to, cars.getCar(index).path, cars.getCar(index).dot, graph);
-
-	
-
-	//³¢ÊÔµ÷¶ÈÒ»Á¾³µ
+	//ï¿½ï¿½ï¿½Ôµï¿½ï¿½Ò»ï¿½ï¿½ï¿½
 	dispatch(graph, cars.getCar(index));
-
-
-
-
-
-
+  
+	for (int i = 0; i < 10240; i++)
+		graph.outputPathFile(a,b,cars.getCar(i).id,cars.getCar(i).planTime,cars.getCar(i).from,cars.getCar(i).to);
+	
+	 system("Pause");
 	return 0;
 }

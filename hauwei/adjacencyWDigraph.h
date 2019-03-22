@@ -6,7 +6,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-
+#include <fstream>
 #include "edge.h"
 
 #define UNKNOWN_PROBLEM 1
@@ -19,27 +19,30 @@ public:
 	~adjacencyWDigraph();
 
 	
-	bool iniRoad(const char* fileName);	//³õÊ¼»¯µÀÂ·Êı¾İ£¬²ÎÊıÎªÎÄ¼şÂ·¾¶
-	bool iniRoad2(const char* fileName);//³õÊ¼»¯µÀÂ·Êı¾İÖ®¶ş£¬²ÎÊıÎªÎÄ¼şÂ·¾¶
-	void output();//Êä³ö¾ØÕó
-	void allpairs(int **, int **);//ÈÎÒâÁ½µãÖ®¼äµÄ×î¶ÌÂ·¾¶
+	bool iniRoad(const char* fileName);	//åˆå§‹åŒ–é“è·¯æ•°æ®ï¼Œå‚æ•°ä¸ºæ–‡ä»¶è·¯å¾„
+	bool iniRoad2(const char* fileName);//åˆå§‹åŒ–é“è·¯æ•°æ®ä¹‹äºŒï¼Œå‚æ•°ä¸ºæ–‡ä»¶è·¯å¾„
+	void output();//è¾“å‡ºçŸ©é˜µ
+	void allpairs(int **, int **);//ä»»æ„ä¸¤ç‚¹ä¹‹é—´çš„æœ€çŸ­è·¯å¾„
 
-	edge& getEdge(int i, int j);//·µ»Ø´Óiµ½jµÄÂ·¾¶
+	edge& getEdge(int i, int j);//è¿”å›ä»iåˆ°jçš„è·¯å¾„
+	void floyid(int **,int **);
+	void outputPathFile(int **,int **,int i,int h,int k,int j);
+	void outputPathFile(int **, int j, int i,int k);
 private:
 	int numVertices;
 	int numEdges;
-	
+	ofstream out;
 	edge **edgesets;
 
 	ifstream car;	
-	ifstream crossAndroad;//ÎÄ¼ş¶ÁÈ¡Á÷
+	ifstream crossAndroad;//æ–‡ä»¶è¯»å–æµ
 };
 
 adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
 {
 	if (numOfVertices < 2)
 		throw UNKNOWN_PROBLEM;
-	//¹¹Ôìº¯Êı
+	//æ„é€ å‡½æ•°
 	numVertices = numOfVertices;
 	numEdges = 0;
 	edge *insert = NULL;
@@ -50,14 +53,14 @@ adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
 	}
 	catch (bad_alloc)
 	{
-		cout << "´íÎó" << endl;
+		cout << "é”™è¯¯" << endl;
 		throw UNKNOWN_PROBLEM;
 	}
 }
 
 adjacencyWDigraph::~adjacencyWDigraph()
 {
-	//Îö¹¹º¯Êı
+	//ææ„å‡½æ•°
 	
 	for (int i = 0; i <= numVertices; i++)
 		delete[] edgesets[i];
@@ -69,11 +72,11 @@ adjacencyWDigraph::~adjacencyWDigraph()
 
 bool adjacencyWDigraph::iniRoad(const char* fileName)
 {
-	//³õÊ¼»¯º¯Êı£¬½«¶ÁÈëµÄÎÄ¼şÌîĞ´µ½Í¼ÖĞ
+	//åˆå§‹åŒ–å‡½æ•°ï¼Œå°†è¯»å…¥çš„æ–‡ä»¶å¡«å†™åˆ°å›¾ä¸­
 	string infile;
 	crossAndroad.open(fileName, ios::in | ios::out);
 	if (!crossAndroad.is_open()) {
-		cout << "ÎÄ¼ş´ò¿ª´íÎó" << endl;
+		cout << "æ–‡ä»¶æ‰“å¼€é”™è¯¯" << endl;
 		return false;
 	}
 	int id, channel, start, dest, length, maxSpeed, single;
@@ -82,7 +85,7 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 	{
 		crossAndroad >> id >> length >> maxSpeed >> channel >> start >> dest >> single;
 
-		//³õÊ¼»¯±ß£¨µÀÂ·£©
+		//åˆå§‹åŒ–è¾¹ï¼ˆé“è·¯ï¼‰
 		insert = &edgesets[start][dest];
 		insert->id = id;
 		insert->length = length;
@@ -90,7 +93,7 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 		insert->channel = channel;
 		numEdges++;
 
-		//³õÊ¼»¯Ã¿ÌõµÀÂ·µÄ¶şÎ¬Êı×é
+		//åˆå§‹åŒ–æ¯æ¡é“è·¯çš„äºŒç»´æ•°ç»„
 		vector<int> temp(length + 1, 0);
 		for (int i = 0; i <= channel; i++)
 		{
@@ -98,7 +101,7 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 		}
 		
 
-		//Èç¹ûÊÇË«Ïò³µµÀµÄµÀÂ·
+		//å¦‚æœæ˜¯åŒå‘è½¦é“çš„é“è·¯
 		if (single == 1)
 		{
 			insert = &edgesets[dest][start];
@@ -121,22 +124,22 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 }
 bool adjacencyWDigraph::iniRoad2(const char* fileName)
 {
-	//³õÊ¼»¯º¯Êı£¬½«¶ÁÈëµÄÎÄ¼şÌîĞ´µ½Í¼ÖĞ
+	//åˆå§‹åŒ–å‡½æ•°ï¼Œå°†è¯»å…¥çš„æ–‡ä»¶å¡«å†™åˆ°å›¾ä¸­
 	string infile;
 	char str[10], one;
 	crossAndroad.open(fileName, ios::in | ios::out);
 	if (!crossAndroad.is_open()) {
-		cout << "ÎÄ¼ş´ò¿ª´íÎó" << endl;
+		cout << "æ–‡ä»¶æ‰“å¼€é”™è¯¯" << endl;
 		return false;
 	}
 	int id, channel, start, dest, length, maxSpeed, single;
 	edge *insert;
 	while (!crossAndroad.eof())
 	{
-		one = crossAndroad.get();//¶Áµô×óÀ¨ºÅ»òÕß'#'
-		if (one == '#')//Èç¹û¶Áµ½µÄÊÇ'#'ÔòºöÂÔÕâÒ»ĞĞ
+		one = crossAndroad.get();//è¯»æ‰å·¦æ‹¬å·æˆ–è€…'#'
+		if (one == '#')//å¦‚æœè¯»åˆ°çš„æ˜¯'#'åˆ™å¿½ç•¥è¿™ä¸€è¡Œ
 			getline(crossAndroad, infile);
-		else//·ñÔò°´¸ñÊ½¶ÁÈ¡
+		else//å¦åˆ™æŒ‰æ ¼å¼è¯»å–
 		{
 			crossAndroad.getline(str, 10, ',');
 			infile = str;
@@ -166,7 +169,7 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 			infile = str;
 			single = std::stoi(infile);
 
-			one = crossAndroad.get();//¶Áµô»»ĞĞ·û
+			one = crossAndroad.get();//è¯»æ‰æ¢è¡Œç¬¦
 			
 			//cout << id << length << maxSpeed << channel << start << dest << single << endl;
 
@@ -212,11 +215,11 @@ void adjacencyWDigraph::output()
 	}
 }
 
-//¶¯Ì¬Ñ°ÕÒËùÓĞ¶¥µã¶ÔÖ®¼äµÄ×î¶ÌÂ·¾¶
+//åŠ¨æ€å¯»æ‰¾æ‰€æœ‰é¡¶ç‚¹å¯¹ä¹‹é—´çš„æœ€çŸ­è·¯å¾„
 void adjacencyWDigraph::allpairs(int **c, int **kay)
 {
 
-	//³õÊ¼»¯c[i][j]
+	//åˆå§‹åŒ–c[i][j]
 	for (int i = 1; i <= numVertices; i++)
 	{
 		for (int j = 1; j <= numVertices; j++)
@@ -229,23 +232,24 @@ void adjacencyWDigraph::allpairs(int **c, int **kay)
 	{
 		c[i][i] = 0;
 	}
-	//¼ÆËãc[o][j]=c(i,j,k)£¬¼´´Óiµ½jµÄÂ·¾¶³¤¶ÈµÈÓÚ´Óiµ½j¾­¹ıkµÄÂ·¾¶³¤¶È
+	//è®¡ç®—c[o][j]=c(i,j,k)ï¼Œå³ä»iåˆ°jçš„è·¯å¾„é•¿åº¦ç­‰äºä»iåˆ°jç»è¿‡kçš„è·¯å¾„é•¿åº¦
 	for (int k = 1; k <= numVertices; k++)
 		for (int i = 1; i <= numVertices; i++)
 			for (int j = 1; j <= numVertices; j++)
-				if (c[i][k] != INF && c[k][j] != INF && (c[i][j] == INF || c[i][j] > c[i][k] + c[k][j]))
-				{//ÕÒµ½c[i][j]µÄ½ÏĞ¡Öµ
+        //æ‰¾åˆ°c[i][j]çš„è¾ƒå°å€¼
+				if (c[i][k] != INF && c[k][j] != INF && (c[i][j] ==INF || c[i][j] > c[i][k] + c[k][j]))
+				{
 					c[i][j] = c[i][k] + c[k][j];
 					kay[i][j] = k;
 				}
 
 }
 //int *adjacencyWDigraph::findPath(int theSource ,int theDestitination)
-//{//Ñ°ÕÒÒ»Ìõ´ÓtheSourceµ½theDestinationµÄ×î¶ÌÂ·¾¶
+//{//å¯»æ‰¾ä¸€æ¡ä»theSourceåˆ°theDestinationçš„æœ€çŸ­è·¯å¾„
 
 //}
 
-//»ñÈ¡´Óiµ½jµÄ±ß£¬Èç¹û²»´æÔÚÔò·µ»Ø¸º±ß
+//è·å–ä»iåˆ°jçš„è¾¹ï¼Œå¦‚æœä¸å­˜åœ¨åˆ™è¿”å›è´Ÿè¾¹
 edge& adjacencyWDigraph::getEdge(int i, int j)
 {
 	if (edgesets[i][j].length != INF)
@@ -262,23 +266,23 @@ edge& adjacencyWDigraph::getEdge(int i, int j)
 
 
 
-//Êä³öÂ·¾¶µÄÊµ¼Ê´úÂë
+//è¾“å‡ºè·¯å¾„çš„å®é™…ä»£ç 
 void outputPath(int **kay, int i, int j)
 {
 	if (i == j)
 		return;
-	if (kay[i][j] == 0)//Â·¾¶ÉÏÃ»ÓĞÖĞ¼ä¶¥µã
+	if (kay[i][j] == 0)//è·¯å¾„ä¸Šæ²¡æœ‰ä¸­é—´é¡¶ç‚¹
 		cout << j << " ";
 	else
-	{//kay[i][j]ÊÇÂ·¾¶ÉÏµÄÒ»¸öÖĞ¼ä¶¥µã
+	{//kay[i][j]æ˜¯è·¯å¾„ä¸Šçš„ä¸€ä¸ªä¸­é—´é¡¶ç‚¹
 		outputPath(kay, i, kay[i][j]);
 		outputPath(kay, kay[i][j], j);
 	}
 }
-//Êä³ö´Óiµ½jµÄ×î¶ÌÂ·¾¶£¬Êä³öµÄÊÇ¶¥µãĞòÁĞ
+//è¾“å‡ºä»iåˆ°jçš„æœ€çŸ­è·¯å¾„ï¼Œè¾“å‡ºçš„æ˜¯é¡¶ç‚¹åºåˆ—
 void outputPath(int **c, int **kay, int i, int j)
 {
-	if (c[i][j] == 1000)
+	if (c[i][j] == INF)
 		cout << "there is  no path from " << i << "to" << j << endl;
 	else
 	{
@@ -287,12 +291,13 @@ void outputPath(int **c, int **kay, int i, int j)
 		cout << endl;
 	}
 }
-//Êµ¼ÊÊä³öÂ·¾¶ÖÁpathÖĞ£¬pathÖĞ½«´æ´¢±ßµÄĞòÁĞ
+
+//å®é™…è¾“å‡ºè·¯å¾„è‡³pathä¸­ï¼Œpathä¸­å°†å­˜å‚¨è¾¹çš„åºåˆ—
 void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
 {
 	if (i == j)
 		return;
-	if (kay[i][j] == 0)//Â·¾¶ÉÏÃ»ÓĞÖĞ¼ä¶¥µã
+	if (kay[i][j] == 0)//è·¯å¾„ä¸Šæ²¡æœ‰ä¸­é—´é¡¶ç‚¹
 	{
 		dot.push_back(j);
 		path.push_back(object.getEdge(i, j).id);
@@ -300,13 +305,13 @@ void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, ad
 
 	}
 	else
-	{//kay[i][j]ÊÇÂ·¾¶ÉÏµÄÒ»¸öÖĞ¼ä¶¥µã
+	{//kay[i][j]æ˜¯è·¯å¾„ä¸Šçš„ä¸€ä¸ªä¸­é—´é¡¶ç‚¹
 		outputPath(kay, i, kay[i][j], path, dot, object);
 		outputPath(kay, kay[i][j], j, path, dot, object);
 	}
 }
-//Êä³öÂ·¾¶ÖÁpathÖĞ£¬pathÖĞ½«´æ´¢±ßµÄĞòÁĞ
-//¿ÉÒÔ¼õÉÙ²ÎÊı£¬Í¨¹ı½á¹¹Ìåcar
+//è¾“å‡ºè·¯å¾„è‡³pathä¸­ï¼Œpathä¸­å°†å­˜å‚¨è¾¹çš„åºåˆ—
+//å¯ä»¥å‡å°‘å‚æ•°ï¼Œé€šè¿‡ç»“æ„ä½“car
 void outputPath(int **c, int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
 {
 	if (c[i][j] == 1000)
@@ -318,6 +323,68 @@ void outputPath(int **c, int **kay, int i, int j, vector<int> &path, vector<int>
 		outputPath(kay, i, j, path, dot, object);
 		cout << endl;
 	}
+}
+
+void adjacencyWDigraph::outputPathFile(int **kay, int i, int j,int k)
+{
+	if (i == j)
+		return;
+	// out.open("out.txt",ios::app);
+	if (out)
+	{
+		if (kay[i][j] == 0)
+		{
+			if (j == k)
+				out << j << ")";
+			else
+				out << j << ",";
+
+		}
+		else
+		{
+			outputPathFile(kay, i, kay[i][j],k);
+			outputPathFile(kay, kay[i][j], j,k);
+		}
+		//out.close();
+	}
+}
+void adjacencyWDigraph::outputPathFile(int **c, int **kay, int k,int h,int i, int j)
+{
+	 out.open("out.txt",ios::app);
+	if (out)
+	{
+		if (c[i][j] == INF)
+			out << "there is  no path from " << i << "to" << j << endl;
+		else
+		{
+			out <<"("<<k<<","<< h<<",";
+			out  << i << ",";
+			outputPathFile(kay, i, j,j);
+			out << "\n";
+		}
+		out.close();
+	}
+}
+
+void adjacencyWDigraph::floyid(int **a,int **b)
+{
+	 out.open("out.txt",ios::app);
+	if (out)
+	{
+		//out << "This is a line.\n";
+		//out << "This is another line.\n";
+		for (int i = 1; i <= numVertices; i++)
+		{
+			for (int j = 1; j <= numVertices; j++)
+			{
+				outputPathFile(a, b,i,i, i, j);
+				//out << a[i][j]<<" ";
+			}
+			out << "\n";
+		}
+		out.close();
+		//cout << "ä¿å­˜æˆåŠŸ";
+    }
 }
 
 #endif

@@ -22,9 +22,11 @@ int main()
 			a[i] = new int[65];
 			b[i] = new int[65];
 		}
-	graph.allpairs(a,b);
-	outputPath(a, b, 39, 18);
-	cout << a[39][18];
-	system("Pause");
+	
+	graph.allpairs(a,b); 
+	//outputPath(a, b, 39, 18);
+	//cout << a[39][18];
+	graph.floyid(a,b);
+	 system("Pause");
 	return 0;
 }

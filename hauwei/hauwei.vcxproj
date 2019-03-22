@@ -128,6 +128,7 @@
     <Text Include="data1\car_process.txt" />
     <Text Include="data1\cross_process.txt" />
     <Text Include="data1\road_process.txt" />
+    <Text Include="out.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

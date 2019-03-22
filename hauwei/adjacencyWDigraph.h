@@ -6,7 +6,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
-
+#include <fstream>
 #include "edge.h"
 
 #define UNKNOWN_PROBLEM 1
@@ -23,10 +23,13 @@ public:
 	bool iniRoad(const char* fileName);	
 	void output();//输出矩阵的长度
 	void allpairs(int **, int **);//任意两点之间的最短路径
+	void floyid(int **,int **);
+	void outputPathFile(int **,int **,int i,int j);
+	void outputPathFile(int **, int j, int i);
 private:
 	int numVertices;
 	int numEdges;
-	
+	ofstream out;
 	edge **edgesets;
 
 	ifstream car;	//车辆
@@ -139,7 +142,7 @@ void adjacencyWDigraph::allpairs(int **c, int **kay)
 	for (int k = 1; k <= numVertices; k++)
 		for (int i = 1; i <= numVertices; i++)
 			for (int j = 1; j <= numVertices; j++)
-				if (c[i][k] != 1000 && c[k][j] != 1000 && (c[i][j] ==1000 || c[i][j] > c[i][k] + c[k][j]))
+				if (c[i][k] != INF && c[k][j] != INF && (c[i][j] ==INF || c[i][j] > c[i][k] + c[k][j]))
 				{
 					c[i][j] = c[i][k] + c[k][j];
 					kay[i][j] = k;
@@ -164,7 +167,7 @@ void outputPath(int **kay, int i, int j)
 }
 void outputPath(int **c, int **kay, int i, int j)
 {
-	if (c[i][j] == 1000)
+	if (c[i][j] == INF)
 		cout << "there is  no path from " << i << "to" << j << endl;
 	else
 	{
@@ -173,6 +176,60 @@ void outputPath(int **c, int **kay, int i, int j)
 		cout << endl;
 	}
 }
+void adjacencyWDigraph::outputPathFile(int **kay, int i, int j)
+{
+	if (i == j)
+		return;
+	// out.open("out.txt",ios::app);
+	if (out)
+	{
+		if (kay[i][j] == 0)
+			out << j << " ";
+		else
+		{
+			outputPathFile(kay, i, kay[i][j]);
+			outputPathFile(kay, kay[i][j], j);
+		}
+		//out.close();
+	}
+}
+void adjacencyWDigraph::outputPathFile(int **c, int **kay, int i, int j)
+{
+	 //out.open("out.txt",ios::app);
+	if (out)
+	{
+		if (c[i][j] == INF)
+			out << "there is  no path from " << i << "to" << j << endl;
+		else
+		{
+			out << c[i][j]<<" ";
+			out << "the path is" << i << " ";
+			outputPathFile(kay, i, j);
+			out << "\n";
+		}
+		//out.close();
+	}
+}
 
+void adjacencyWDigraph::floyid(int **a,int **b)
+{
+	 out.open("out.txt",ios::app);
+	if (out)
+	{
+		//out << "This is a line.\n";
+		//out << "This is another line.\n";
+		for (int i = 1; i <= numVertices; i++)
+		{
+			for (int j = 1; j <= numVertices; j++)
+			{
+				outputPathFile(a, b, i, j);
+				//out << a[i][j]<<" ";
+			}
+			out << "\n";
+		}
+		out.close();
+		//cout << "保存成功";
+    }
+}
 
 #endif

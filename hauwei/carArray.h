@@ -9,7 +9,7 @@
 #include "car.h"
 using namespace std;
 
-#define contianer 20000
+const int CONTAINER = 20000;
 
 class carArray
 {
@@ -28,7 +28,7 @@ private:
 bool carArray::iniCar(const char* fileName)
 {
 	//初始化函数，将读入的文件填写到车数组中
-	carsets.resize(contianer);//初始化有container辆车，后面可以修改大小
+	carsets.resize(CONTAINER);//初始化有container辆车，后面可以修改大小
 	carstream.open(fileName, ios::in | ios::out);
 	if (!carstream.is_open()) {
 		cout << "文件打开错误" << endl;

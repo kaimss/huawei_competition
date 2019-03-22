@@ -7,9 +7,13 @@
 #include <sstream>
 #include <vector>
 #include <fstream>
+
+#include <cstdlib>
+
 #include "edge.h"
 
 #define UNKNOWN_PROBLEM 1
+
 using namespace std;
 
 class adjacencyWDigraph
@@ -142,32 +146,25 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 		else//否则按格式读取
 		{
 			crossAndroad.getline(str, 10, ',');
-			infile = str;
-			id = std::stoi(infile);
+			id = std::atoi(str);
 
 			crossAndroad.getline(str, 10, ',');
-			infile = str;
-			length = std::stoi(infile);
+			length = std::atoi(str);
 
 			crossAndroad.getline(str, 10, ',');
-			infile = str;
-			maxSpeed = std::stoi(infile);
+			maxSpeed = std::atoi(str);
 
 			crossAndroad.getline(str, 10, ',');
-			infile = str;
-			channel = std::stoi(infile);
+			channel = std::atoi(str);
 
 			crossAndroad.getline(str, 10, ',');
-			infile = str;
-			start = std::stoi(infile);
+			start = std::atoi(str);
 
 			crossAndroad.getline(str, 10, ',');
-			infile = str;
-			dest = std::stoi(infile);
+			dest = std::atoi(str);
 
 			crossAndroad.getline(str, 10, ')');
-			infile = str;
-			single = std::stoi(infile);
+			single = std::atoi(str);
 
 			one = crossAndroad.get();//读掉换行符
 			

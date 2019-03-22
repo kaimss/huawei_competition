@@ -24,8 +24,8 @@ public:
 	void output();//输出矩阵的长度
 	void allpairs(int **, int **);//任意两点之间的最短路径
 	void floyid(int **,int **);
-	void outputPathFile(int **,int **,int i,int j);
-	void outputPathFile(int **, int j, int i);
+	void outputPathFile(int **,int **,int i,int h,int k,int j);
+	void outputPathFile(int **, int j, int i,int k);
 private:
 	int numVertices;
 	int numEdges;
@@ -176,7 +176,7 @@ void outputPath(int **c, int **kay, int i, int j)
 		cout << endl;
 	}
 }
-void adjacencyWDigraph::outputPathFile(int **kay, int i, int j)
+void adjacencyWDigraph::outputPathFile(int **kay, int i, int j,int k)
 {
 	if (i == j)
 		return;
@@ -184,30 +184,36 @@ void adjacencyWDigraph::outputPathFile(int **kay, int i, int j)
 	if (out)
 	{
 		if (kay[i][j] == 0)
-			out << j << " ";
+		{
+			if (j == k)
+				out << j << ")";
+			else
+				out << j << ",";
+
+		}
 		else
 		{
-			outputPathFile(kay, i, kay[i][j]);
-			outputPathFile(kay, kay[i][j], j);
+			outputPathFile(kay, i, kay[i][j],k);
+			outputPathFile(kay, kay[i][j], j,k);
 		}
 		//out.close();
 	}
 }
-void adjacencyWDigraph::outputPathFile(int **c, int **kay, int i, int j)
+void adjacencyWDigraph::outputPathFile(int **c, int **kay, int k,int h,int i, int j)
 {
-	 //out.open("out.txt",ios::app);
+	 out.open("out.txt",ios::app);
 	if (out)
 	{
 		if (c[i][j] == INF)
 			out << "there is  no path from " << i << "to" << j << endl;
 		else
 		{
-			out << c[i][j]<<" ";
-			out << "the path is" << i << " ";
-			outputPathFile(kay, i, j);
+			out <<"("<<k<<","<< h<<",";
+			out  << i << ",";
+			outputPathFile(kay, i, j,j);
 			out << "\n";
 		}
-		//out.close();
+		out.close();
 	}
 }
 
@@ -222,7 +228,7 @@ void adjacencyWDigraph::floyid(int **a,int **b)
 		{
 			for (int j = 1; j <= numVertices; j++)
 			{
-				outputPathFile(a, b, i, j);
+				outputPathFile(a, b,i,i, i, j);
 				//out << a[i][j]<<" ";
 			}
 			out << "\n";

@@ -10,10 +10,9 @@ using namespace std;
 
 int main()
 {
+
 	adjacencyWDigraph graph(64);
 	graph.iniRoad("data1//road_process.txt");
-  
-	//graph.output();
 
 	int **a, **b;
 	a = new int*[65];
@@ -24,8 +23,8 @@ int main()
 			b[i] = new int[65];
 		}
 	graph.allpairs(a,b);
-	outputPath(a, b, 39, 18);
-	cout << a[39][18];
+	outputPath(a, b, 57, 8);
+	cout << a[57][8];
   
 	return 0;
 }

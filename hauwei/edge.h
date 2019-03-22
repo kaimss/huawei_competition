@@ -2,6 +2,10 @@
 #ifndef _EDGE_
 #define _EDGE_
 
+#include<iostream>
+
+using namespace std;
+
 const int INF = 0x6f6f6f6f;
 
 struct edge

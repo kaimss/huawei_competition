@@ -39,7 +39,6 @@ bool carArray::iniCar(const char* fileName)
 	car tempcar;
 	while (!carstream.eof())
 	{
-
 		carstream >> id >> from >> to >> speed >> planTime;
 
 		//赋值
@@ -50,10 +49,6 @@ bool carArray::iniCar(const char* fileName)
 		carsets[i].planTime = planTime;
 
 		i++;
-
-		
-		
-
 	}
 	carsets.resize(i);//调整容器大小
 	carstream.close();
@@ -64,7 +59,7 @@ bool carArray::iniCar2(const char* fileName)
 	//初始化函数，将读入的文件填写到车数组中
 	string infile;
 	char str[10], one;
-	carsets.resize(contianer);//初始化有container辆车，后面可以修改大小
+	carsets.resize(CONTAINER);//初始化有container辆车，后面可以修改大小
 	carstream.open(fileName, ios::in | ios::out);
 	if (!carstream.is_open()) {
 		cout << "文件打开错误" << endl;
@@ -80,29 +75,21 @@ bool carArray::iniCar2(const char* fileName)
 		else//否则按格式读取
 		{
 			carstream.getline(str, 10, ',');
-			infile = str;
-			id = std::stoi(infile);
+			id = std::atoi(str);
 
 			carstream.getline(str, 10, ',');
-			infile = str;
-			from = std::stoi(infile);
+			from = std::atoi(str);
 
 			carstream.getline(str, 10, ',');
-			infile = str;
-			to = std::stoi(infile);
+			to = std::atoi(str);
 
 			carstream.getline(str, 10, ',');
-			infile = str;
-			speed = std::stoi(infile);
+			speed = std::atoi(str);
 
 			carstream.getline(str, 10, '\n');
-			infile = str;
-			planTime = std::stoi(infile);
-
+			planTime = std::atoi(str);
 
 			one = carstream.get();//读掉换行符
-
-
 
 			//赋值
 			carsets[i].id = id;//id从0开始
@@ -112,10 +99,7 @@ bool carArray::iniCar2(const char* fileName)
 			carsets[i].planTime = planTime;
 
 			i++;
-
-
 		}
-
 	}
 	carsets.resize(i);//调整容器大小
 	carstream.close();

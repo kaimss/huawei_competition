@@ -272,31 +272,34 @@ void outputPath(int **c, int **kay, int i, int j)
 	}
 }
 //实际输出路径至path中，path中将存储边的序列
-void outputPath(int **kay, int i, int j, vector<int> &path, adjacencyWDigraph &object)
+void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
 {
 	if (i == j)
 		return;
 	if (kay[i][j] == 0)//路径上没有中间顶点
 	{
+		dot.push_back(j);
 		path.push_back(object.getEdge(i, j).id);
 		cout << j << " ";
 
 	}
 	else
 	{//kay[i][j]是路径上的一个中间顶点
-		outputPath(kay, i, kay[i][j], path, object);
-		outputPath(kay, kay[i][j], j, path, object);
+		outputPath(kay, i, kay[i][j], path, dot, object);
+		outputPath(kay, kay[i][j], j, path, dot, object);
 	}
 }
 //输出路径至path中，path中将存储边的序列
-void outputPath(int **c, int **kay, int i, int j, vector<int> &path, adjacencyWDigraph &object)
+//可以减少参数，通过结构体car
+void outputPath(int **c, int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
 {
 	if (c[i][j] == 1000)
 		cout << "there is  no path from " << i << "to" << j << endl;
 	else
 	{
 		cout << "the path is" << i << " ";
-		outputPath(kay, i, j, path, object);
+		dot.push_back(i);
+		outputPath(kay, i, j, path, dot, object);
 		cout << endl;
 	}
 }

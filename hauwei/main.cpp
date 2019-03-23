@@ -12,20 +12,37 @@ using namespace std;
 
 void dispatch(adjacencyWDigraph&, car&);//��ʱ�ĵ�Ⱥ���
 
-int main()
+int main(int argc, char** argv)
 {
+	if (argc < 5)
+	{
+		cout << "usage: ./CodeCraft-2019 ../config/car.txt ../config/road.txt ../config/cross.txt ../config/answer.txt" << endl;
+		exit(0);
+	}
+
+	string car_path(argv[1]);		//读入车辆文件路径
+	string roads_path(argv[2]);		//读入道路文件路径
+	string crosses_path(argv[3]);	//读入路口文件路径
+	string answer_path(argv[4]);	//生成结果文件路径
+
+	cout << "car file path: " << argv[1] << endl;
+	cout << "road file path: " << argv[2] << endl;
+	cout << "cross file path: " << argv[3] << endl;
+	cout << "result file path: " << argv[4] << endl;
+
 	adjacencyWDigraph graph(64);
-	graph.iniRoad("data1//road_process.txt");
+	//graph.iniRoad("data1//road_process.txt");
+	graph.iniRoad2(argv[2]);
 	//未处理文件读取
 	//graph.iniRoad2("data2//road.txt");
 	//graph.output();
 
 	carArray cars;
-	cars.iniCar("data1//car_process.txt");
+	//cars.iniCar("data1//car_process.txt");
+	cars.iniCar2(argv[1]);
 	//未处理文件读取
 	//cars.iniCar2("data2//car.txt");
 	
-
 	int **a, **b;
 	a = new int*[65];
 	b = new int*[65];
@@ -43,7 +60,7 @@ int main()
 	dispatch(graph, cars.getCar(index));
   
 	for (int i = 0; i < 10240; i++)
-		graph.outputPathFile(a,b,cars.getCar(i).id,cars.getCar(i).planTime,cars.getCar(i).from,cars.getCar(i).to);
+		graph.outputPathFile(argv[4],a,b,cars.getCar(i).id,cars.getCar(i).planTime,cars.getCar(i).from,cars.getCar(i).to);
 	
 	return 0;
 }

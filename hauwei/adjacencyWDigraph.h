@@ -29,9 +29,9 @@ public:
 	void allpairs(int **, int **);//任意两点之间的最短路径
 
 	edge& getEdge(int i, int j);//返回从i到j的路径
-	void floyid(int **,int **);
-	void outputPathFile(int **,int **,int i,int h,int k,int j);
-	void outputPathFile(int **, int j, int i,int k);
+	void floyid(char *path, int **,int **);
+	void outputPathFile(char* path, int **,int **,int i,int h,int k,int j);
+	void outputPathFile(char* path, int **, int j, int i,int k);
 private:
 	int numVertices;
 	int numEdges;
@@ -280,7 +280,7 @@ void outputPath(int **kay, int i, int j)
 void outputPath(int **c, int **kay, int i, int j)
 {
 	if (c[i][j] == INF)
-		cout << "there is  no path from " << i << "to" << j << endl;
+		cout << "there is no path from " << i << "to" << j << endl;
 	else
 	{
 		cout << "the path is" << i << " ";
@@ -312,7 +312,7 @@ void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, ad
 void outputPath(int **c, int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
 {
 	if (c[i][j] == 1000)
-		cout << "there is  no path from " << i << "to" << j << endl;
+		cout << "there is no path from " << i << "to" << j << endl;
 	else
 	{
 		cout << "the path is" << i << " ";
@@ -322,11 +322,10 @@ void outputPath(int **c, int **kay, int i, int j, vector<int> &path, vector<int>
 	}
 }
 
-void adjacencyWDigraph::outputPathFile(int **kay, int i, int j,int k)
+void adjacencyWDigraph::outputPathFile(char *path, int **kay, int i, int j,int k)
 {
 	if (i == j)
 		return;
-	// out.open("out.txt",ios::app);
 	if (out)
 	{
 		if (kay[i][j] == 0)
@@ -335,19 +334,18 @@ void adjacencyWDigraph::outputPathFile(int **kay, int i, int j,int k)
 				out << j << ")";
 			else
 				out << j << ",";
-
 		}
 		else
 		{
-			outputPathFile(kay, i, kay[i][j],k);
-			outputPathFile(kay, kay[i][j], j,k);
+			outputPathFile(path, kay, i, kay[i][j],k);
+			outputPathFile(path, kay, kay[i][j], j,k);
 		}
 		//out.close();
 	}
 }
-void adjacencyWDigraph::outputPathFile(int **c, int **kay, int k,int h,int i, int j)
+void adjacencyWDigraph::outputPathFile(char* path, int **c, int **kay, int k,int h,int i, int j)
 {
-	 out.open("out.txt",ios::app);
+	 out.open(path,ios::app);
 	if (out)
 	{
 		if (c[i][j] == INF)
@@ -356,14 +354,14 @@ void adjacencyWDigraph::outputPathFile(int **c, int **kay, int k,int h,int i, in
 		{
 			out <<"("<<k<<","<< h<<",";
 			out  << i << ",";
-			outputPathFile(kay, i, j,j);
+			outputPathFile(path, kay, i, j,j);
 			out << "\n";
 		}
 		out.close();
 	}
 }
 
-void adjacencyWDigraph::floyid(int **a,int **b)
+void adjacencyWDigraph::floyid(char* path, int **a,int **b)
 {
 	 out.open("out.txt",ios::app);
 	if (out)
@@ -374,7 +372,7 @@ void adjacencyWDigraph::floyid(int **a,int **b)
 		{
 			for (int j = 1; j <= numVertices; j++)
 			{
-				outputPathFile(a, b,i,i, i, j);
+				outputPathFile(path, a, b, i, i, i, j);
 				//out << a[i][j]<<" ";
 			}
 			out << "\n";

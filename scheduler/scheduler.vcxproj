@@ -20,8 +20,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{ABFFD334-3797-404E-8EEE-470A2E9DB76C}</ProjectGuid>
-    <RootNamespace>hauwei</RootNamespace>
+    <ProjectGuid>{A573D1EB-46EA-43F1-9812-C5DACE5D0F9D}</ProjectGuid>
+    <RootNamespace>scheduler</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -77,9 +77,6 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -88,9 +85,6 @@
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -122,18 +116,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="adjacencyWDigraph.h" />
-    <ClInclude Include="car.h" />
-    <ClInclude Include="carArray.h" />
-    <ClInclude Include="edge.h" />
-    <ClInclude Include="testdispatch.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="data1\car_process.txt" />
-    <Text Include="data1\cross_process.txt" />
-    <Text Include="data1\road_process.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

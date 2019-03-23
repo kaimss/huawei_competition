@@ -19,32 +19,4 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="adjacencyWDigraph.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="edge.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="car.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="carArray.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="testdispatch.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="data1\car_process.txt">
-      <Filter>资源文件</Filter>
-    </Text>
-    <Text Include="data1\cross_process.txt">
-      <Filter>资源文件</Filter>
-    </Text>
-    <Text Include="data1\road_process.txt">
-      <Filter>资源文件</Filter>
-    </Text>
-  </ItemGroup>
 </Project>

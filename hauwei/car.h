@@ -1,8 +1,11 @@
 #pragma once
 #ifndef _CAR_
 #define _CAR_
+
 #include <iostream>
+
 using namespace std;
+
 struct car
 {
 	int id;//车辆编号
@@ -34,8 +37,6 @@ struct car
 		id(id), from(from), to(to), maxSpeed(maxSpeed), planTime(planTime), second(second) {}
 
 	friend ostream& operator << (ostream &out, const car &p);//重载输出流，输出内容待定（使用时需要引入头文件及定义命名空间）
-
-
 };
 
 ostream& operator << (ostream &out, const car &p)

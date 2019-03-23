@@ -46,8 +46,5 @@
     <Text Include="data1\road_process.txt">
       <Filter>资源文件</Filter>
     </Text>
-    <Text Include="out.txt">
-      <Filter>资源文件</Filter>
-    </Text>
   </ItemGroup>
 </Project>

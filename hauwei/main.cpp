@@ -5,9 +5,11 @@
 #include <cassert>
 #include <vector>
 #include <string>
+
 #include "adjacencyWDigraph.h"
 #include "carArray.h"
 #include "testdispatch.h"
+
 using namespace std;
 
 void dispatch(adjacencyWDigraph&, car&);
@@ -58,7 +60,8 @@ int main(int argc, char** argv)
 	outputPath(a, b, cars.getCar(index).from, cars.getCar(index).to, cars.getCar(index).path, cars.getCar(index).dot, graph);
 	//尝试调度一辆车
 	dispatch(graph, cars.getCar(index));
-  
+
+
 	for (int i = 0; i < cars.getNumber(); i++)
 		graph.outputPathFile(argv[4],a,b,cars.getCar(i).id,cars.getCar(i).planTime,cars.getCar(i).from,cars.getCar(i).to);
 	

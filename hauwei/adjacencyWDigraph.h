@@ -7,9 +7,8 @@
 #include <sstream>
 #include <vector>
 #include <fstream>
-
 #include <cstdlib>
-
+#include "carArray.h"
 #include "edge.h"
 
 #define UNKNOWN_PROBLEM 1
@@ -29,9 +28,10 @@ public:
 	void allpairs(int **, int **);//任意两点之间的最短路径
 
 	edge& getEdge(int i, int j);//返回从i到j的路径
-	void floyid(char *path, int **,int **);
-	void outputPathFile(char* path, int **,int **,int i,int h,int k,int j);
-	void outputPathFile(char* path, int **, int j, int i,int k);
+	void floyid(char *, int **,int **);
+	void outputPathFile(char*, int **,int **,int,int,int,int);
+	void outputPathFile(char*, int **, int, int, int);
+	void output(char *, int **, int **, carArray &);
 private:
 	int numVertices;
 	int numEdges;
@@ -331,9 +331,9 @@ void adjacencyWDigraph::outputPathFile(char *path, int **kay, int i, int j,int k
 		if (kay[i][j] == 0)
 		{
 			if (j == k)
-				out << j << ")";
+				out << edgesets[i][j].id << ")";
 			else
-				out << j << ",";
+				out << edgesets[i][j].id << ",";
 		}
 		else
 		{
@@ -345,7 +345,7 @@ void adjacencyWDigraph::outputPathFile(char *path, int **kay, int i, int j,int k
 }
 void adjacencyWDigraph::outputPathFile(char* path, int **c, int **kay, int k,int h,int i, int j)
 {
-	 out.open(path,ios::app);
+
 	if (out)
 	{
 		if (c[i][j] == INF)
@@ -353,14 +353,22 @@ void adjacencyWDigraph::outputPathFile(char* path, int **c, int **kay, int k,int
 		else
 		{
 			out <<"("<<k<<","<< h<<",";
-			out  << i << ",";
 			outputPathFile(path, kay, i, j,j);
 			out << "\n";
 		}
-		out.close();
+		
 	}
 }
-
+void adjacencyWDigraph::output(char* path, int **c, int **kay, carArray &cars)
+{
+	out.open(path, ios::out);
+	out.close();
+	out.open(path, ios::app);
+	for (int i = 0; i < cars.getNumber(); i++)
+		if (out)
+			outputPathFile(path, c, kay, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to);
+	out.close();
+}
 void adjacencyWDigraph::floyid(char* path, int **a,int **b)
 {
 	 out.open("out.txt",ios::app);

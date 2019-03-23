@@ -311,7 +311,7 @@ void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, ad
 //可以减少参数，通过结构体car
 void outputPath(int **c, int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
 {
-	if (c[i][j] == 1000)
+	if (c[i][j] == INF)
 		cout << "there is no path from " << i << "to" << j << endl;
 	else
 	{
@@ -371,7 +371,7 @@ void adjacencyWDigraph::output(char* path, int **c, int **kay, carArray &cars)
 }
 void adjacencyWDigraph::floyid(char* path, int **a,int **b)
 {
-	 out.open("out.txt",ios::app);
+	 out.open(path,ios::app);
 	if (out)
 	{
 		//out << "This is a line.\n";

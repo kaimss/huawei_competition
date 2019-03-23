@@ -326,7 +326,6 @@ void adjacencyWDigraph::outputPathFile(int **kay, int i, int j,int k)
 {
 	if (i == j)
 		return;
-	// out.open("out.txt",ios::app);
 	if (out)
 	{
 		if (kay[i][j] == 0)

@@ -5,7 +5,6 @@
 #include <vector>
 #include <iostream>
 #include <string>
-//#include <sstream>
 #include "car.h"
 using namespace std;
 
@@ -18,12 +17,13 @@ public:
 	bool iniCar2(const char* fileName);//初始化车辆数据之二，参数为文件路径
 
 	car& getCar(int i);//返回第i辆车
+	int getNumber();//返回车辆数目
 
 private:
 	//vector<car> carsets(contianer);//需要给定一个初始化值以减少后面push_back的次数而减少时间
 						   //有错，在声明.h 文件中不能直接调用vector类的析构函数赋值，需要在其他函数中声明大小
-	vector<car> carsets;
-	ifstream carstream;
+	vector<car> carsets;//车辆集合
+	ifstream carstream;//读取car.txt文件流
 };
 bool carArray::iniCar(const char* fileName)
 {
@@ -86,7 +86,7 @@ bool carArray::iniCar2(const char* fileName)
 			carstream.getline(str, 10, ',');
 			speed = std::atoi(str);
 
-			carstream.getline(str, 10, '\n');
+			carstream.getline(str, 10, ')');
 			planTime = std::atoi(str);
 
 			one = carstream.get();//读掉换行符
@@ -109,6 +109,10 @@ bool carArray::iniCar2(const char* fileName)
 car& carArray::getCar(int i)
 {
 	return carsets[i];
+}
+int carArray::getNumber()
+{
+	return carsets.size();
 }
 #endif
 

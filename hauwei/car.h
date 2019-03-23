@@ -41,7 +41,7 @@ struct car
 
 ostream& operator << (ostream &out, const car &p)
 {
-	out << "id:"<< p.id << "\tmaxspeed" << p.maxSpeed << "\nfrom:" << p.from << "\tto:" << p.to ;
+	out << "id:"<< p.id << "\tmaxspeed:" << p.maxSpeed << "\nfrom:" << p.from << "\tto:" << p.to ;
 	out << "\nplanTime:" << p.planTime << "\n";
 	out << "croad:" << p.croad << "\ncchannel:" << p.cchannel << "\tcfrom:" << p.cfrom << "\tcto:" << p.cto;
 	out << "\ncspeed:" << p.cspeed << "\tcdistance:" << p.cdistance << "\ndirection:" << p.direction;

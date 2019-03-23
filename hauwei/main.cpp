@@ -10,7 +10,7 @@
 #include "testdispatch.h"
 using namespace std;
 
-void dispatch(adjacencyWDigraph&, car&);//��ʱ�ĵ�Ⱥ���
+void dispatch(adjacencyWDigraph&, car&);
 
 int main(int argc, char** argv)
 {
@@ -32,16 +32,16 @@ int main(int argc, char** argv)
 
 	adjacencyWDigraph graph(64);
 	//graph.iniRoad("data1//road_process.txt");
+
+
 	graph.iniRoad2(argv[2]);
 	//未处理文件读取
-	//graph.iniRoad2("data2//road.txt");
 	//graph.output();
 
 	carArray cars;
 	//cars.iniCar("data1//car_process.txt");
 	cars.iniCar2(argv[1]);
 	//未处理文件读取
-	//cars.iniCar2("data2//car.txt");
 	
 	int **a, **b;
 	a = new int*[65];
@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 	//尝试调度一辆车
 	dispatch(graph, cars.getCar(index));
   
-	for (int i = 0; i < 10240; i++)
+	for (int i = 0; i < cars.getNumber(); i++)
 		graph.outputPathFile(argv[4],a,b,cars.getCar(i).id,cars.getCar(i).planTime,cars.getCar(i).from,cars.getCar(i).to);
 	
 	return 0;

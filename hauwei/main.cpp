@@ -42,7 +42,8 @@ int main(int argc, char** argv)
 	cars.iniCar2(argv[1]);
 	//未处理文件读取
 	vector<pair<int ,int>> carTime(10240);
-	int **a, **b;
+	int **a;
+	int **b;
 	a = new int*[65];
 	b = new int*[65];
 	for (int i = 0; i <= 64; i++)
@@ -51,7 +52,7 @@ int main(int argc, char** argv)
 		b[i] = new int[65];
 	}
 	graph.allpairs(a,b);
-	for (int index = 0; index < 10240; index++)
+	/*for (int index = 0; index < 10240; index++)
 	{
 		//int index = 1;
 	//计算 index 号车的最短路径所经过的路口序列和道路序列
@@ -61,14 +62,19 @@ int main(int argc, char** argv)
 		carTime[index].first = index+10000;
 		carTime[index].second = cars.getCar(index).planTime + cars.getCar(index).second;
 		//cout << cars.getCar(index).id << " " << cars.getCar(index).planTime << " "<<cars.getCar(index).second << " " << cars.getCar(index).planTime + cars.getCar(index).second<<endl;
+	}*/
+	for (int index = 0; index < 10240; index++)
+	{
+		carTime[index].first = index + 10000;
+		carTime[index].second = cars.getCar(index).planTime;
 	}
-	
-	binSort(carTime,70);
+	binSort(carTime,70);//桶排倒序
+	int count=0;
 	//for (int index = 0; index < 10240; index++)
 	//	cout << carTime[index].first << " " << carTime[index].second<<endl;
-	//graph.output(argv[4], a, b, cars);
-	//for (int i = 0; i < cars.getNumber(); i++)
-	//	graph.outputPathFile(argv[4], a, b, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to);
+	graph.output(argv[4], a, b, cars,count);
+	//for (int i = cars.getNumber()-1; i >= 0; i--)
+	//	graph.outputPathFile(argv[4], a, b, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to,count);
 	
 	return 0;
 }

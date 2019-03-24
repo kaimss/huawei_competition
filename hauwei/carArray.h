@@ -140,3 +140,4 @@ void binSort(vector<pair<int,int>>& carTime,int range)
 	delete []car;
 }
 
+

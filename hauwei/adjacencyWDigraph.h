@@ -29,9 +29,9 @@ public:
 
 	edge& getEdge(int i, int j);//返回从i到j的路径
 	void floyid(char *, int **,int **);
-	void outputPathFile(char*, int **,int **,int,int,int,int);
+	void outputPathFile(char*, int **,int **,int,int,int,int,int&);
 	void outputPathFile(char*, int **, int, int, int);
-	void output(char *, int **, int **, carArray &);
+	void output(char *, int **, int **, carArray &,int &);
 private:
 	int numVertices;
 	int numEdges;
@@ -348,7 +348,7 @@ void adjacencyWDigraph::outputPathFile(char *path, int **kay, int i, int j,int k
 		//out.close();
 	}
 }
-void adjacencyWDigraph::outputPathFile(char* path, int **c, int **kay, int k,int h,int i, int j)
+void adjacencyWDigraph::outputPathFile(char* path, int **c, int **kay, int k,int h,int i, int j,int &count)
 {
 	//参数分别为路径名称，最短路径数组，前驱数组，车辆id，车辆出发时间，车辆起始路口和目的路口
 	if (out)
@@ -357,26 +357,26 @@ void adjacencyWDigraph::outputPathFile(char* path, int **c, int **kay, int k,int
 			out << "there is  no path from " << i << "to" << j << endl;
 		else
 		{
-			out <<"("<<k<<","<< h<<",";
+			out <<"("<<k<<","<< h+(count%500)<<",";
 			//carTime[k - 10000][0] = k;
 			//carTime[k - 10000][1] = h;
 			outputPathFile(path, kay, i, j,j);
 			out << "\n";
 		}
-		
+		count++;
 	}
 }
-void adjacencyWDigraph::output(char* path, int **c, int **kay, carArray &cars)
+void adjacencyWDigraph::output(char* path, int **c, int **kay, carArray &cars,int &count)
 {
 	out.open(path, ios::out);
 	out.close();
 	out.open(path, ios::app);
-	for (int i = 0; i < cars.getNumber(); i++)
+	for (int i = cars.getNumber()-1; i >=0; i--)
 		if (out)
-			outputPathFile(path, c, kay, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to);
+			outputPathFile(path, c, kay, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to,count);
 	out.close();
 }
-void adjacencyWDigraph::floyid(char* path, int **a,int **b)
+/*void adjacencyWDigraph::floyid(char* path, int **a,int **b)
 {
 	 out.open("out.txt",ios::app);
 	if (out)
@@ -395,6 +395,6 @@ void adjacencyWDigraph::floyid(char* path, int **a,int **b)
 		out.close();
 		//cout << "保存成功";
     }
-}
+}*/
 
 #endif

@@ -25,13 +25,13 @@ public:
 	bool iniRoad(const char* fileName);	//初始化道路数据，参数为文件路径
 	bool iniRoad2(const char* fileName);//初始化道路数据之二，参数为文件路径
 	void output();//输出矩阵
-	void allpairs(int **, int **);//任意两点之间的最短路径
+	void allpairs(float **, int **);//任意两点之间的最短路径
 
 	edge& getEdge(int i, int j);//返回从i到j的路径
-	void floyid(char *, int **,int **);
-	void outputPathFile(char*, int **,int **,int,int,int,int);
+	//void floyid(char *, int **,int **);
+	void outputPathFile(char*, float **,int **,int,int,int,int);
 	void outputPathFile(char*, int **, int, int, int);
-	void output(char *, int **, int **, carArray &);
+	void output(char *, float **, int **, carArray &);
 private:
 	int numVertices;
 	int numEdges;
@@ -213,7 +213,7 @@ void adjacencyWDigraph::output()
 }
 
 //动态寻找所有顶点对之间的最短路径
-void adjacencyWDigraph::allpairs(int **c, int **kay)
+void adjacencyWDigraph::allpairs(float **c, int **kay)
 {
 
 	//初始化c[i][j]
@@ -221,7 +221,7 @@ void adjacencyWDigraph::allpairs(int **c, int **kay)
 	{
 		for (int j = 1; j <= numVertices; j++)
 		{
-			c[i][j] = edgesets[i][j].length;
+			c[i][j] = edgesets[i][j].depend();
 			kay[i][j] = 0;
 		}
 	}
@@ -239,7 +239,6 @@ void adjacencyWDigraph::allpairs(int **c, int **kay)
 					c[i][j] = c[i][k] + c[k][j];
 					kay[i][j] = k;
 				}
-
 }
 //int *adjacencyWDigraph::findPath(int theSource ,int theDestitination)
 //{//寻找一条从theSource到theDestination的最短路径
@@ -256,7 +255,7 @@ edge& adjacencyWDigraph::getEdge(int i, int j)
 	else
 	{
 		edge temp(-1, -1, -1, -1);
-		cout << "There is not edge from " << i << " to " << j << " through function adjacencyWDigraph::getEdge!\n";
+		cout << "There is no edge from " << i << " to " << j << " through function adjacencyWDigraph::getEdge!\n";
 		return temp;
 	}
 }
@@ -309,7 +308,7 @@ void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, ad
 }
 //输出路径至path中，path中将存储边的序列
 //可以减少参数，通过结构体car
-void outputPath(int **c, int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
+void outputPath(float **c, int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
 {
 	if (c[i][j] == INF)
 		cout << "there is no path from " << i << "to" << j << endl;
@@ -343,12 +342,12 @@ void adjacencyWDigraph::outputPathFile(char *path, int **kay, int i, int j,int k
 		//out.close();
 	}
 }
-void adjacencyWDigraph::outputPathFile(char* path, int **c, int **kay, int k,int h,int i, int j)
+void adjacencyWDigraph::outputPathFile(char* path, float **c, int **kay, int k,int h,int i, int j)
 {
 
 	if (out)
 	{
-		if (c[i][j] == INF)
+		if (c[i][j] + 1 > INF)
 			out << "there is  no path from " << i << "to" << j << endl;
 		else
 		{
@@ -359,7 +358,7 @@ void adjacencyWDigraph::outputPathFile(char* path, int **c, int **kay, int k,int
 		
 	}
 }
-void adjacencyWDigraph::output(char* path, int **c, int **kay, carArray &cars)
+void adjacencyWDigraph::output(char* path, float **c, int **kay, carArray &cars)
 {
 	out.open(path, ios::out);
 	out.close();
@@ -369,6 +368,7 @@ void adjacencyWDigraph::output(char* path, int **c, int **kay, carArray &cars)
 			outputPathFile(path, c, kay, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to);
 	out.close();
 }
+/*
 void adjacencyWDigraph::floyid(char* path, int **a,int **b)
 {
 	 out.open(path,ios::app);
@@ -389,5 +389,5 @@ void adjacencyWDigraph::floyid(char* path, int **a,int **b)
 		//cout << "保存成功";
     }
 }
-
+*/
 #endif

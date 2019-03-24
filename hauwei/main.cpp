@@ -42,12 +42,13 @@ int main(int argc, char** argv)
 	cars.iniCar2(argv[1]);
 	//未处理文件读取
 
-	int **a, **b;
-	a = new int*[65];
+	float **a;
+	int **b;
+	a = new float*[65];
 	b = new int*[65];
 	for (int i = 0; i <= 64; i++)
 	{
-		a[i] = new int[65];
+		a[i] = new float[65];
 		b[i] = new int[65];
 	}
 	graph.allpairs(a,b);

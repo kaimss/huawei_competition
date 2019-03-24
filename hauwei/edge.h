@@ -34,11 +34,13 @@ struct edge
 	friend edge operator - (const edge &a, const edge &b);//重载结构体-，目前仅将length相加，其他的量保持与a相同
 	//friend ostream& operator << (ostream &out, const edge &p);//重载输出流，输出内容待定（使用时需要引入头文件及定义命名空间）
 
-	int depend()
+	float depend()
 	{
 		float n1 = length;
 		float n2 = maxSpeed;
-		return (int)(n1 / n2);
+		if (maxSpeed == 0)
+			return INF;
+		return n1 / n2;
 	}
 
 };

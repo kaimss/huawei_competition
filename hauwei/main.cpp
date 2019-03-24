@@ -51,8 +51,9 @@ int main(int argc, char** argv)
 		a[i] = new float[65];		///这个需要改
 		b[i] = new int[65];			///这个需要改
 	}
-	graph.allpairs(a, b);
-	for (int index = 0; index < 10240; index++)		///这个需要改
+
+	graph.allpairs(a,b);
+	/*for (int index = 0; index < 10240; index++)
 	{
 		//int index = 1;
 	//计算 index 号车的最短路径所经过的路口序列和道路序列
@@ -62,14 +63,20 @@ int main(int argc, char** argv)
 		carTime[index].first = index+10000;		///这个需要改
 		carTime[index].second = cars.getCar(index).planTime + cars.getCar(index).second;
 		//cout << cars.getCar(index).id << " " << cars.getCar(index).planTime << " "<<cars.getCar(index).second << " " << cars.getCar(index).planTime + cars.getCar(index).second<<endl;
+	}*/
+	for (int index = 0; index < 10240; index++)
+	{
+		carTime[index].first = index + 10000;
+		carTime[index].second = cars.getCar(index).planTime;
 	}
-	
-	binSort(carTime,500);	///这个需要改
-	for (int index = 0; index < 10240; index++)		///这个需要改
-		cout << carTime[index].first << " " << carTime[index].second<<endl;
-	//graph.output(argv[4], a, b, cars);
-	//for (int i = 0; i < cars.getNumber(); i++)
-	//	graph.outputPathFile(argv[4], a, b, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to);
-	
+
+	binSort(carTime,70);//桶排倒序
+	int count=0;
+	//for (int index = 0; index < 10240; index++)
+	//	cout << carTime[index].first << " " << carTime[index].second<<endl;
+	graph.output(argv[4], a, b, cars,count);
+	//for (int i = cars.getNumber()-1; i >= 0; i--)
+	//	graph.outputPathFile(argv[4], a, b, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to,count);
+
 	return 0;
 }

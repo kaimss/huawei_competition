@@ -85,7 +85,7 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 		if (second == acar.planTime)
 		{//到达出发时间
 
-			cout << "第" << second << "秒车辆开始出发\n";
+			//cout << "第" << second << "秒车辆开始出发\n";
 
 			acar.second = 0;//每辆车的计时器
 			acar.cchannel = 1;//车道选择1
@@ -110,10 +110,9 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 			{//下一秒会到达路口
 				if (acar.cto == acar.to)
 				{//到达终点
-				 //一些操作
 					acar.cdistance = droad.length;
-					cout << "第" << second << "秒车辆到达终点\n";
-					cout << acar;
+					//cout << "第" << second << "秒车辆到达终点\n";
+					//cout << acar;
 					return;
 				}
 				else
@@ -121,16 +120,10 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 					int S1 = droad.length - acar.cdistance;
 					edge &ndroad = graph.getEdge(acar.cto, acar.dot[acar.i + 2]);
 					int S2 = min(acar.maxSpeed, ndroad.maxSpeed);
-					if (acar.dot[acar.i + 2] == acar.to)
-					{//到达终点
-						acar.cdistance = droad.length;
-						cout << "第" << second << "秒车辆到达终点\n";
-						cout << acar;
-						return;
-					}
+				
 					if (S2 <= S1)
 					{//无法通过路口
-						cout << "第" << second << "秒车辆到达路口" << acar.dot[acar.i + 1] << "且未通过\n";
+						//cout << "第" << second << "秒车辆到达路口" << acar.dot[acar.i + 1] << "且未通过\n";
 
 						droad.road[acar.cchannel][acar.cdistance] = 0;//清除上一个位置
 						acar.cdistance = droad.length;//更新当前行驶距离
@@ -150,7 +143,7 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 						acar.direction = acar.cto - acar.cfrom;//更新行驶方向
 						acar.croad = ndroad.id;//更新行驶道路编号
 
-						cout << "第" << second << "秒车辆" << itd(acar.turn) << "穿过路口" << acar.dot[acar.i + 2] << "且到达道路" << droad.id << "\n";
+						//cout << "第" << second << "秒车辆" << itd(acar.turn) << "穿过路口" << acar.dot[acar.i] << "且到达道路" << ndroad.id << "\n";
 
 						droad.road[acar.cchannel][acar.cdistance] = 0;//清除在上一条道路的信息
 						acar.cdistance = S2 - S1;//目前行驶距离为S2-S1
@@ -163,8 +156,7 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 			}
 			else
 			{//下一秒未到达路口
-				cout << "第" << second << "秒车辆在道路" << droad.id << "上行驶\n";
-				//一些操作
+				//cout << "第" << second << "秒车辆在道路" << droad.id << "上行驶\n";
 				droad.road[acar.cchannel][acar.cdistance] = 0;//清除上一个位置
 				acar.cdistance += acar.cspeed;//更新当前行驶距离
 				droad.road[acar.cchannel][acar.cdistance] = acar.id;//更新当前位置
@@ -172,7 +164,7 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 			}
 
 			
-			cout << acar << "\n";
+			//cout << acar << "\n";
 
 		}
 		else

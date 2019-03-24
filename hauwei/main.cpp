@@ -41,27 +41,34 @@ int main(int argc, char** argv)
 	//cars.iniCar("data1//car_process.txt");
 	cars.iniCar2(argv[1]);
 	//未处理文件读取
-
-	float **a;
-	int **b;
-	a = new float*[65];
+	vector<pair<int ,int>> carTime(10240);
+	int **a, **b;
+	a = new int*[65];
 	b = new int*[65];
 	for (int i = 0; i <= 64; i++)
 	{
-		a[i] = new float[65];
+		a[i] = new int[65];
 		b[i] = new int[65];
 	}
 	graph.allpairs(a,b);
-
-	int index = 88;
+	for (int index = 0; index < 10240; index++)
+	{
+		//int index = 1;
 	//计算 index 号车的最短路径所经过的路口序列和道路序列
-	outputPath(a, b, cars.getCar(index).from, cars.getCar(index).to, cars.getCar(index).path, cars.getCar(index).dot, graph);
-	//尝试调度一辆车
-	dispatch(graph, cars.getCar(index));
-  
-	graph.output(argv[4], a, b, cars);
-	for (int i = 0; i < cars.getNumber(); i++)
-		graph.outputPathFile(argv[4], a, b, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to);
+		outputPath(a, b, cars.getCar(index).from, cars.getCar(index).to, cars.getCar(index).path, cars.getCar(index).dot, graph);
+		//尝试调度一辆车
+		dispatch(graph, cars.getCar(index));
+		carTime[index].first = index+10000;
+		carTime[index].second = cars.getCar(index).planTime + cars.getCar(index).second;
+		//cout << cars.getCar(index).id << " " << cars.getCar(index).planTime << " "<<cars.getCar(index).second << " " << cars.getCar(index).planTime + cars.getCar(index).second<<endl;
+	}
+	
+	binSort(carTime,70);
+	//for (int index = 0; index < 10240; index++)
+	//	cout << carTime[index].first << " " << carTime[index].second<<endl;
+	//graph.output(argv[4], a, b, cars);
+	//for (int i = 0; i < cars.getNumber(); i++)
+	//	graph.outputPathFile(argv[4], a, b, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to);
 	
 	return 0;
 }

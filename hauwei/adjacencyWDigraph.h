@@ -27,9 +27,11 @@ public:
 	bool iniRoad2(const char* fileName);//初始化道路数据之二，参数为文件路径
 	void output();//输出矩阵
 	void allpairs(float **, int **);//任意两点之间的最短路径
+	void shortestPaths(int sourceVertex, int* distanceFromSource, int* predecessor);//两点间最短路径
 
 	edge& getEdge(int i, int j);//返回从i到j的路径
 	//void floyid(char *, int **,int **);
+	void outputPath(int source, int destination);
 	void outputPathFile(char*, float **,int **,int,int,int,int,int&);
 	void outputPathFile(char*, int **, int, int, int);
 	void output(char *, float **, int **, carArray &,int &);
@@ -259,6 +261,92 @@ void adjacencyWDigraph::allpairs(float **c, int **kay)
 //{//寻找一条从theSource到theDestination的最短路径
 
 //}
+void adjacencyWDigraph::outputPath(int source, int destination)
+{
+	int* distanceFromSource = new int[numVertices + 1];
+	int* predecessor = new int[numVertices + 1];
+	shortestPaths(source, distanceFromSource, predecessor);
+	if (distanceFromSource[destination] == INF)
+	{
+		cout << "不可达\n";
+	}
+	int i = predecessor[destination];
+	while (predecessor[i] != 0)
+	{
+		cout << predecessor[i] << "  ";
+		i = predecessor[i];
+	}
+
+}
+
+/**/
+void adjacencyWDigraph::shortestPaths(int sourceVertex, int* distanceFromSource, int* predecessor)
+{//寻找一条从sourceVertex到其他点的最短路径
+ //在数组distanceFromSource中返回最短路径
+ //在数组prdecessor中返回顶点在路径上的前驱的information
+	vector<int> newReachableVertices;
+	for (int i = 1; i <= numVertices; i++)
+	{
+		distanceFromSource[i] = edgesets[sourceVertex][i].length;
+		if (distanceFromSource[i] == INF)
+			predecessor[i] = -1;
+		else
+		{
+
+			predecessor[i] = sourceVertex;
+			newReachableVertices.insert(newReachableVertices.begin(), i);
+
+		}
+
+
+	}
+	distanceFromSource[sourceVertex] = 0;
+	predecessor[sourceVertex] = 0;  // source vertex has no predecessor
+
+									// update distanceFromSource and predecessor
+	while (!newReachableVertices.empty())
+	{// more paths exist
+	 // find unreached vertex v with least distanceFromSource
+		vector<int>::iterator iNewReachableVertices
+			= newReachableVertices.begin();
+		vector<int>::iterator theEnd = newReachableVertices.end();
+		int v = *iNewReachableVertices;
+		iNewReachableVertices++;
+		while (iNewReachableVertices != theEnd)
+		{
+			int w = *iNewReachableVertices;
+			iNewReachableVertices++;
+			if (distanceFromSource[w] < distanceFromSource[v])
+				v = w;
+		}
+
+		// next shortest path is to vertex v, delete v from
+		// newReachableVertices and update distanceFromSource
+		for (int i = 0; i <= newReachableVertices.size(); i++)
+		{
+			if (newReachableVertices[i] == v)
+			{
+				newReachableVertices.erase(newReachableVertices.begin() + i);
+				break;
+			}
+		}
+
+		for (int j = 1; j <= numVertices; j++)
+		{
+			if (edgesets[v][j] != INF && (predecessor[j] == -1 ||
+				distanceFromSource[j] > distanceFromSource[v] + edgesets[v][j].length))
+			{
+				// distanceFromSource[j] decreases
+				distanceFromSource[j] = distanceFromSource[v] + edgesets[v][j].length;
+				// add j to newReachableVertices
+				if (predecessor[j] == -1)
+					// not reached before
+					newReachableVertices.insert(newReachableVertices.begin(), j);
+				predecessor[j] = v;
+			}
+		}
+	}
+}
 
 //获取从i到j的边，如果不存在则返回负边
 edge& adjacencyWDigraph::getEdge(int i, int j)

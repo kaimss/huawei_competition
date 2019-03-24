@@ -87,6 +87,4 @@ edge operator - (const edge &a, const edge &b)
 //	return out;
 //}
 
-
-
 #endif

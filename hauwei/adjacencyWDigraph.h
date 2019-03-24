@@ -35,6 +35,7 @@ public:
 private:
 	int numVertices;
 	int numEdges;
+	int **carTime;
 	ofstream out;
 	edge **edgesets;
 
@@ -52,8 +53,12 @@ adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
 	edge *insert = NULL;
 	try {
 		edgesets = new edge*[numVertices + 1];
+		carTime = new int*[numVertices];
 		for (int i = 0; i <= numVertices; i++)
+		{
 			edgesets[i] = new edge[numVertices + 1];
+			carTime[i] = new int[3];
+		}
 	}
 	catch (bad_alloc)
 	{
@@ -298,7 +303,7 @@ void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, ad
 	{
 		dot.push_back(j);
 		path.push_back(object.getEdge(i, j).id);
-		cout << j << " ";
+		//cout << j << " ";
 
 	}
 	else
@@ -315,10 +320,10 @@ void outputPath(int **c, int **kay, int i, int j, vector<int> &path, vector<int>
 		cout << "there is no path from " << i << "to" << j << endl;
 	else
 	{
-		cout << "the path is" << i << " ";
+		//cout << "the path is" << i << " ";
 		dot.push_back(i);
 		outputPath(kay, i, j, path, dot, object);
-		cout << endl;
+		//cout << endl;
 	}
 }
 
@@ -345,7 +350,7 @@ void adjacencyWDigraph::outputPathFile(char *path, int **kay, int i, int j,int k
 }
 void adjacencyWDigraph::outputPathFile(char* path, int **c, int **kay, int k,int h,int i, int j)
 {
-
+	//参数分别为路径名称，最短路径数组，前驱数组，车辆id，车辆出发时间，车辆起始路口和目的路口
 	if (out)
 	{
 		if (c[i][j] == INF)
@@ -353,6 +358,8 @@ void adjacencyWDigraph::outputPathFile(char* path, int **c, int **kay, int k,int
 		else
 		{
 			out <<"("<<k<<","<< h<<",";
+			//carTime[k - 10000][0] = k;
+			//carTime[k - 10000][1] = h;
 			outputPathFile(path, kay, i, j,j);
 			out << "\n";
 		}

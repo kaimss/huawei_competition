@@ -115,5 +115,28 @@ int carArray::getNumber()
 	return carsets.size();
 }
 #endif
+void binSort(vector<pair<int,int>>& carTime,int range)
+{
+	int numberOfElements = carTime.size();
+	vector<pair<int, int>>* car = new vector<pair<int, int>>[range]();
 
+	for (int i = 0; i < numberOfElements; i++)
+	{
+		//car[i](1);
+		pair<int, int> temp = carTime.back();
+		carTime.pop_back();
+		car[temp.second].push_back(temp);
+	}
+	for (int j = range-1; j >= 0; j--)
+	{
+		while (!car[j].empty()) 
+		{
+			pair<int, int> temp = car[j].front();
+			vector<pair<int,int>>::iterator k = car[j].begin();
+			car[j].erase(k);
+			carTime.push_back(temp);
+         }
+	}
+	delete []car;
+}
 

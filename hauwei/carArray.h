@@ -5,11 +5,10 @@
 #include <vector>
 #include <iostream>
 #include <string>
-//#include <sstream>
 #include "car.h"
 using namespace std;
 
-#define contianer 20000
+const int CONTAINER = 20000;
 
 class carArray
 {
@@ -18,17 +17,18 @@ public:
 	bool iniCar2(const char* fileName);//初始化车辆数据之二，参数为文件路径
 
 	car& getCar(int i);//返回第i辆车
+	int getNumber();//返回车辆数目
 
 private:
 	//vector<car> carsets(contianer);//需要给定一个初始化值以减少后面push_back的次数而减少时间
 						   //有错，在声明.h 文件中不能直接调用vector类的析构函数赋值，需要在其他函数中声明大小
-	vector<car> carsets;
-	ifstream carstream;
+	vector<car> carsets;//车辆集合
+	ifstream carstream;//读取car.txt文件流
 };
 bool carArray::iniCar(const char* fileName)
 {
 	//初始化函数，将读入的文件填写到车数组中
-	carsets.resize(contianer);//初始化有container辆车，后面可以修改大小
+	carsets.resize(CONTAINER);//初始化有container辆车，后面可以修改大小
 	carstream.open(fileName, ios::in | ios::out);
 	if (!carstream.is_open()) {
 		cout << "文件打开错误" << endl;
@@ -39,7 +39,6 @@ bool carArray::iniCar(const char* fileName)
 	car tempcar;
 	while (!carstream.eof())
 	{
-
 		carstream >> id >> from >> to >> speed >> planTime;
 
 		//赋值
@@ -50,10 +49,6 @@ bool carArray::iniCar(const char* fileName)
 		carsets[i].planTime = planTime;
 
 		i++;
-
-		
-		
-
 	}
 	carsets.resize(i);//调整容器大小
 	carstream.close();
@@ -64,7 +59,7 @@ bool carArray::iniCar2(const char* fileName)
 	//初始化函数，将读入的文件填写到车数组中
 	string infile;
 	char str[10], one;
-	carsets.resize(contianer);//初始化有container辆车，后面可以修改大小
+	carsets.resize(CONTAINER);//初始化有container辆车，后面可以修改大小
 	carstream.open(fileName, ios::in | ios::out);
 	if (!carstream.is_open()) {
 		cout << "文件打开错误" << endl;
@@ -80,29 +75,21 @@ bool carArray::iniCar2(const char* fileName)
 		else//否则按格式读取
 		{
 			carstream.getline(str, 10, ',');
-			infile = str;
-			id = std::stoi(infile);
+			id = std::atoi(str);
 
 			carstream.getline(str, 10, ',');
-			infile = str;
-			from = std::stoi(infile);
+			from = std::atoi(str);
 
 			carstream.getline(str, 10, ',');
-			infile = str;
-			to = std::stoi(infile);
+			to = std::atoi(str);
 
 			carstream.getline(str, 10, ',');
-			infile = str;
-			speed = std::stoi(infile);
+			speed = std::atoi(str);
 
-			carstream.getline(str, 10, '\n');
-			infile = str;
-			planTime = std::stoi(infile);
-
+			carstream.getline(str, 10, ')');
+			planTime = std::atoi(str);
 
 			one = carstream.get();//读掉换行符
-
-
 
 			//赋值
 			carsets[i].id = id;//id从0开始
@@ -112,10 +99,7 @@ bool carArray::iniCar2(const char* fileName)
 			carsets[i].planTime = planTime;
 
 			i++;
-
-
 		}
-
 	}
 	carsets.resize(i);//调整容器大小
 	carstream.close();
@@ -125,6 +109,10 @@ bool carArray::iniCar2(const char* fileName)
 car& carArray::getCar(int i)
 {
 	return carsets[i];
+}
+int carArray::getNumber()
+{
+	return carsets.size();
 }
 #endif
 

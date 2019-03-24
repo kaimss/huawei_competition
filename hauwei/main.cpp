@@ -10,21 +10,37 @@
 #include "testdispatch.h"
 using namespace std;
 
+void dispatch(adjacencyWDigraph&, car&);
 
-
-void dispatch(adjacencyWDigraph&, car&);//ÔÝÊ±µÄµ÷¶Èº¯Êý
-
-int main()
+int main(int argc, char** argv)
 {
+	if (argc < 5)
+	{
+		cout << "usage: ./CodeCraft-2019 ../config/car.txt ../config/road.txt ../config/cross.txt ../config/answer.txt" << endl;
+		exit(0);
+	}
+
+	string car_path(argv[1]);		//è¯»å…¥è½¦è¾†æ–‡ä»¶è·¯å¾„
+	string roads_path(argv[2]);		//è¯»å…¥é“è·¯æ–‡ä»¶è·¯å¾„
+	string crosses_path(argv[3]);	//è¯»å…¥è·¯å£æ–‡ä»¶è·¯å¾„
+	string answer_path(argv[4]);	//ç”Ÿæˆç»“æžœæ–‡ä»¶è·¯å¾„
+
+	cout << "car file path: " << argv[1] << endl;
+	cout << "road file path: " << argv[2] << endl;
+	cout << "cross file path: " << argv[3] << endl;
+	cout << "result file path: " << argv[4] << endl;
+
 	adjacencyWDigraph graph(64);
-	graph.iniRoad("data1//road_process.txt");
-	//graph.iniRoad2("data2//road.txt");
+	//graph.iniRoad("data1//road_process.txt");
+
+	graph.iniRoad2(argv[2]);
+	//æœªå¤„ç†æ–‡ä»¶è¯»å–
 	//graph.output();
 
 	carArray cars;
-	cars.iniCar("data1//car_process.txt");
-	//cars.iniCar2("data2//car.txt");
-	
+	//cars.iniCar("data1//car_process.txt");
+	cars.iniCar2(argv[1]);
+	//æœªå¤„ç†æ–‡ä»¶è¯»å–
 
 	int **a, **b;
 	a = new int*[65];
@@ -35,23 +51,16 @@ int main()
 		b[i] = new int[65];
 	}
 	graph.allpairs(a,b);
-	//outputPath(a, b, 1, 36);
-	//cout << a[1][36];
-
 
 	int index = 88;
-	//¼ÆËãindexºÅ³µµÄ×î¶ÌÂ·¾¶Ëù¾­¹ýµÄÂ·¿ÚÐòÁÐºÍµÀÂ·ÐòÁÐ
+	//è®¡ç®— index å·è½¦çš„æœ€çŸ­è·¯å¾„æ‰€ç»è¿‡çš„è·¯å£åºåˆ—å’Œé“è·¯åºåˆ—
 	outputPath(a, b, cars.getCar(index).from, cars.getCar(index).to, cars.getCar(index).path, cars.getCar(index).dot, graph);
-
-	
-
-	//³¢ÊÔµ÷¶ÈÒ»Á¾³µ
+	//å°è¯•è°ƒåº¦ä¸€è¾†è½¦
 	dispatch(graph, cars.getCar(index));
-
-
-
-
-
-
+  
+	graph.output(argv[4], a, b, cars);
+	for (int i = 0; i < cars.getNumber(); i++)
+		graph.outputPathFile(argv[4], a, b, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to);
+	
 	return 0;
 }

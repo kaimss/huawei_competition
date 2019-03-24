@@ -81,7 +81,7 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 
 	for (second = 0; second <= maxsecond; second++)
 	{
-		//出发前的判定（是否延缓发车，及选择车道）
+		
 		if (second == acar.planTime)
 		{//到达出发时间
 
@@ -94,11 +94,13 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 			acar.direction = acar.cto - acar.cfrom;//目前行驶方向
 			acar.turn = 1;//目前是直行状态
 			acar.cdistance = 0;//目前行驶距离为0
+			
 
-							   //行驶道路时的判定（行驶车道前方是否有车，是否限速）
-			edge &droad = graph.getEdge(acar.cfrom, acar.cto);
-			acar.cspeed = min(droad.maxSpeed, acar.maxSpeed);
-			droad.road[acar.cchannel][acar.cdistance] = acar.id;
+			
+			edge &droad = graph.getEdge(acar.cfrom, acar.cto);//获取当前将要行驶的道路
+			acar.croad = droad.id;//目前行驶道路编号
+			acar.cspeed = min(droad.maxSpeed, acar.maxSpeed);//获得当前速度
+			droad.road[acar.cchannel][acar.cdistance] = acar.id;//将此车标记在道路上
 		}
 		else if (second > acar.planTime)
 		{//行驶中
@@ -119,6 +121,13 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 					int S1 = droad.length - acar.cdistance;
 					edge &ndroad = graph.getEdge(acar.cto, acar.dot[acar.i + 2]);
 					int S2 = min(acar.maxSpeed, ndroad.maxSpeed);
+					if (acar.dot[acar.i + 2] == acar.to)
+					{//到达终点
+						acar.cdistance = droad.length;
+						cout << "第" << second << "秒车辆到达终点\n";
+						cout << acar;
+						return;
+					}
 					if (S2 <= S1)
 					{//无法通过路口
 						cout << "第" << second << "秒车辆到达路口" << acar.dot[acar.i + 1] << "且未通过\n";
@@ -133,21 +142,14 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 
 
 
-					 //更新车辆信息与道路信息
+					   //更新车辆信息与道路信息
 						acar.i++;//更新路径计数器
-						acar.cfrom = acar.dot[acar.i];//目前从cfrom路口行驶到cto路口
+						acar.cfrom = acar.dot[acar.i];//更新行驶路口序列，目前从cfrom路口行驶到cto路口
 						acar.cto = acar.dot[acar.i + 1];
-						acar.turn = qualifyturn(acar.direction, acar.cto - acar.cfrom);
-						acar.direction = acar.cto - acar.cfrom;//目前行驶方向
+						acar.turn = qualifyturn(acar.direction, acar.cto - acar.cfrom);//确定转向
+						acar.direction = acar.cto - acar.cfrom;//更新行驶方向
+						acar.croad = ndroad.id;//更新行驶道路编号
 
-						if (acar.cto == acar.to)
-						{//到达终点
-						 //一些操作
-							acar.cdistance = droad.length;
-							cout << "第" << second << "秒车辆到达终点\n";
-							cout << acar;
-							return;
-						}
 						cout << "第" << second << "秒车辆" << itd(acar.turn) << "穿过路口" << acar.dot[acar.i + 2] << "且到达道路" << droad.id << "\n";
 
 						droad.road[acar.cchannel][acar.cdistance] = 0;//清除在上一条道路的信息
@@ -168,7 +170,9 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 				droad.road[acar.cchannel][acar.cdistance] = acar.id;//更新当前位置
 
 			}
-			//行驶道路时的判定（行驶车道前方是否有车，是否限速）
+
+			
+			cout << acar << "\n";
 
 		}
 		else
@@ -179,14 +183,14 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 
 
 
+		//出发前的判定（是否延缓发车，及选择车道）
 
-
-
+		//行驶道路时的判定（行驶车道前方是否有车，是否限速）
 
 		//到达路口时的判定（方向与转向，行驶优先级，是否可过路口，下一路口的车道选择）
 
 		//到达目的地的判定
-		cout << acar << "\n";
+		
 	}
 }
 #endif

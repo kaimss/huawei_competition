@@ -5,8 +5,6 @@ VisualStudioVersion = 15.0.28307.489
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "hauwei", "hauwei\hauwei.vcxproj", "{ABFFD334-3797-404E-8EEE-470A2E9DB76C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "scheduler", "scheduler\scheduler.vcxproj", "{A573D1EB-46EA-43F1-9812-C5DACE5D0F9D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -23,14 +21,6 @@ Global
 		{ABFFD334-3797-404E-8EEE-470A2E9DB76C}.Release|x64.Build.0 = Release|x64
 		{ABFFD334-3797-404E-8EEE-470A2E9DB76C}.Release|x86.ActiveCfg = Release|Win32
 		{ABFFD334-3797-404E-8EEE-470A2E9DB76C}.Release|x86.Build.0 = Release|Win32
-		{A573D1EB-46EA-43F1-9812-C5DACE5D0F9D}.Debug|x64.ActiveCfg = Debug|x64
-		{A573D1EB-46EA-43F1-9812-C5DACE5D0F9D}.Debug|x64.Build.0 = Debug|x64
-		{A573D1EB-46EA-43F1-9812-C5DACE5D0F9D}.Debug|x86.ActiveCfg = Debug|Win32
-		{A573D1EB-46EA-43F1-9812-C5DACE5D0F9D}.Debug|x86.Build.0 = Debug|Win32
-		{A573D1EB-46EA-43F1-9812-C5DACE5D0F9D}.Release|x64.ActiveCfg = Release|x64
-		{A573D1EB-46EA-43F1-9812-C5DACE5D0F9D}.Release|x64.Build.0 = Release|x64
-		{A573D1EB-46EA-43F1-9812-C5DACE5D0F9D}.Release|x86.ActiveCfg = Release|Win32
-		{A573D1EB-46EA-43F1-9812-C5DACE5D0F9D}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

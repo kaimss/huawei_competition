@@ -13,25 +13,25 @@ const int CONTAINER = 20000;
 class carArray
 {
 public:
-	bool iniCar(const char* fileName);//³õÊ¼»¯³µÁ¾Êı¾İ£¬²ÎÊıÎªÎÄ¼şÂ·¾¶
-	bool iniCar2(const char* fileName);//³õÊ¼»¯³µÁ¾Êı¾İÖ®¶ş£¬²ÎÊıÎªÎÄ¼şÂ·¾¶
+	bool iniCar(const char* fileName);//åˆå§‹åŒ–è½¦è¾†æ•°æ®ï¼Œå‚æ•°ä¸ºæ–‡ä»¶è·¯å¾„
+	bool iniCar2(const char* fileName);//åˆå§‹åŒ–è½¦è¾†æ•°æ®ä¹‹äºŒï¼Œå‚æ•°ä¸ºæ–‡ä»¶è·¯å¾„
 
-	car& getCar(int i);//·µ»ØµÚiÁ¾³µ
-	int getNumber();//·µ»Ø³µÁ¾ÊıÄ¿
+	car& getCar(int i);//è¿”å›ç¬¬iè¾†è½¦
+	int getNumber();//è¿”å›è½¦è¾†æ•°ç›®
 
 private:
-	//vector<car> carsets(contianer);//ĞèÒª¸ø¶¨Ò»¸ö³õÊ¼»¯ÖµÒÔ¼õÉÙºóÃæpush_backµÄ´ÎÊı¶ø¼õÉÙÊ±¼ä
-						   //ÓĞ´í£¬ÔÚÉùÃ÷.h ÎÄ¼şÖĞ²»ÄÜÖ±½Óµ÷ÓÃvectorÀàµÄÎö¹¹º¯Êı¸³Öµ£¬ĞèÒªÔÚÆäËûº¯ÊıÖĞÉùÃ÷´óĞ¡
-	vector<car> carsets;//³µÁ¾¼¯ºÏ
-	ifstream carstream;//¶ÁÈ¡car.txtÎÄ¼şÁ÷
+	//vector<car> carsets(contianer);//éœ€è¦ç»™å®šä¸€ä¸ªåˆå§‹åŒ–å€¼ä»¥å‡å°‘åé¢push_backçš„æ¬¡æ•°è€Œå‡å°‘æ—¶é—´
+						   //æœ‰é”™ï¼Œåœ¨å£°æ˜.h æ–‡ä»¶ä¸­ä¸èƒ½ç›´æ¥è°ƒç”¨vectorç±»çš„ææ„å‡½æ•°èµ‹å€¼ï¼Œéœ€è¦åœ¨å…¶ä»–å‡½æ•°ä¸­å£°æ˜å¤§å°
+	vector<car> carsets;//è½¦è¾†é›†åˆ
+	ifstream carstream;//è¯»å–car.txtæ–‡ä»¶æµ
 };
 bool carArray::iniCar(const char* fileName)
 {
-	//³õÊ¼»¯º¯Êı£¬½«¶ÁÈëµÄÎÄ¼şÌîĞ´µ½³µÊı×éÖĞ
-	carsets.resize(CONTAINER);//³õÊ¼»¯ÓĞcontainerÁ¾³µ£¬ºóÃæ¿ÉÒÔĞŞ¸Ä´óĞ¡
+	//åˆå§‹åŒ–å‡½æ•°ï¼Œå°†è¯»å…¥çš„æ–‡ä»¶å¡«å†™åˆ°è½¦æ•°ç»„ä¸­
+	carsets.resize(CONTAINER);//åˆå§‹åŒ–æœ‰containerè¾†è½¦ï¼Œåé¢å¯ä»¥ä¿®æ”¹å¤§å°
 	carstream.open(fileName, ios::in | ios::out);
 	if (!carstream.is_open()) {
-		cout << "ÎÄ¼ş´ò¿ª´íÎó" << endl;
+		cout << "æ–‡ä»¶æ‰“å¼€é”™è¯¯" << endl;
 		return false;
 	}
 	int id, from, to, speed, planTime;
@@ -41,8 +41,8 @@ bool carArray::iniCar(const char* fileName)
 	{
 		carstream >> id >> from >> to >> speed >> planTime;
 
-		//¸³Öµ
-		carsets[i].id = id;//id´Ó0¿ªÊ¼
+		//èµ‹å€¼
+		carsets[i].id = id;//idä»0å¼€å§‹
 		carsets[i].from = from;
 		carsets[i].to = to;
 		carsets[i].maxSpeed = speed;
@@ -50,29 +50,29 @@ bool carArray::iniCar(const char* fileName)
 
 		i++;
 	}
-	carsets.resize(i);//µ÷ÕûÈİÆ÷´óĞ¡
+	carsets.resize(i);//è°ƒæ•´å®¹å™¨å¤§å°
 	carstream.close();
 	return true;
 }
 bool carArray::iniCar2(const char* fileName)
 {
-	//³õÊ¼»¯º¯Êı£¬½«¶ÁÈëµÄÎÄ¼şÌîĞ´µ½³µÊı×éÖĞ
+	//åˆå§‹åŒ–å‡½æ•°ï¼Œå°†è¯»å…¥çš„æ–‡ä»¶å¡«å†™åˆ°è½¦æ•°ç»„ä¸­
 	string infile;
 	char str[10], one;
-	carsets.resize(CONTAINER);//³õÊ¼»¯ÓĞcontainerÁ¾³µ£¬ºóÃæ¿ÉÒÔĞŞ¸Ä´óĞ¡
+	carsets.resize(CONTAINER);//åˆå§‹åŒ–æœ‰containerè¾†è½¦ï¼Œåé¢å¯ä»¥ä¿®æ”¹å¤§å°
 	carstream.open(fileName, ios::in | ios::out);
 	if (!carstream.is_open()) {
-		cout << "ÎÄ¼ş´ò¿ª´íÎó" << endl;
+		cout << "æ–‡ä»¶æ‰“å¼€é”™è¯¯" << endl;
 		return false;
 	}
 	int id, from, to, speed, planTime;
-	int i = 0;//ĞĞ¼ÆÊıÆ÷£¬ÓÃÓÚÖØĞÂµ÷ÕûvectorÈİÆ÷´óĞ¡
+	int i = 0;//è¡Œè®¡æ•°å™¨ï¼Œç”¨äºé‡æ–°è°ƒæ•´vectorå®¹å™¨å¤§å°
 	while (!carstream.eof())
 	{
-		one = carstream.get();//¶Áµô×óÀ¨ºÅ»òÕß'#'
-		if (one == '#')//Èç¹û¶Áµ½µÄÊÇ'#'ÔòºöÂÔÕâÒ»ĞĞ
+		one = carstream.get();//è¯»æ‰å·¦æ‹¬å·æˆ–è€…'#'
+		if (one == '#')//å¦‚æœè¯»åˆ°çš„æ˜¯'#'åˆ™å¿½ç•¥è¿™ä¸€è¡Œ
 			getline(carstream, infile);
-		else//·ñÔò°´¸ñÊ½¶ÁÈ¡
+		else//å¦åˆ™æŒ‰æ ¼å¼è¯»å–
 		{
 			carstream.getline(str, 10, ',');
 			id = std::atoi(str);
@@ -89,10 +89,10 @@ bool carArray::iniCar2(const char* fileName)
 			carstream.getline(str, 10, ')');
 			planTime = std::atoi(str);
 
-			one = carstream.get();//¶Áµô»»ĞĞ·û
+			one = carstream.get();//è¯»æ‰æ¢è¡Œç¬¦
 
-			//¸³Öµ
-			carsets[i].id = id;//id´Ó0¿ªÊ¼
+			//èµ‹å€¼
+			carsets[i].id = id;//idä»0å¼€å§‹
 			carsets[i].from = from;
 			carsets[i].to = to;
 			carsets[i].maxSpeed = speed;
@@ -101,7 +101,7 @@ bool carArray::iniCar2(const char* fileName)
 			i++;
 		}
 	}
-	carsets.resize(i);//µ÷ÕûÈİÆ÷´óĞ¡
+	carsets.resize(i);//è°ƒæ•´å®¹å™¨å¤§å°
 	carstream.close();
 	return true;
 }
@@ -114,21 +114,26 @@ int carArray::getNumber()
 {
 	return carsets.size();
 }
-#endif
+
 void binSort(vector<pair<int,int>>& carTime,int range)
 {
 	int numberOfElements = carTime.size();
-	vector<pair<int, int>>* car = new vector<pair<int, int>>[range]();
+	vector<pair<int, int>> one;
+	vector<vector<pair<int, int>>> car(range, one);
 
 	for (int i = 0; i < numberOfElements; i++)
 	{
+		
 		//car[i](1);
 		pair<int, int> temp = carTime.back();
 		carTime.pop_back();
+		//cout << "one " << i << "temp.second = " << temp.second << endl;
 		car[temp.second].push_back(temp);
 	}
+
 	for (int j = range-1; j >= 0; j--)
 	{
+		//cout << "two " << j << endl;
 		while (!car[j].empty()) 
 		{
 			pair<int, int> temp = car[j].front();
@@ -137,7 +142,9 @@ void binSort(vector<pair<int,int>>& carTime,int range)
 			carTime.push_back(temp);
          }
 	}
-	delete []car;
+	//delete []car;
 }
 
+
+#endif
 

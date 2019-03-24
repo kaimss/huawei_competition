@@ -59,7 +59,7 @@ int main(int argc, char** argv)
 		outputPath(a, b, cars.getCar(index).from, cars.getCar(index).to, cars.getCar(index).path, cars.getCar(index).dot, graph);
 		//尝试调度一辆车
 		dispatch(graph, cars.getCar(index));
-		carTime[index].first = index+10000;		///这个需要改
+		carTime[index].first = index + 10000;		///这个需要改
 		carTime[index].second = cars.getCar(index).planTime + cars.getCar(index).second;
 		//cout << cars.getCar(index).id << " " << cars.getCar(index).planTime << " "<<cars.getCar(index).second << " " << cars.getCar(index).planTime + cars.getCar(index).second<<endl;
 	}

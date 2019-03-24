@@ -34,14 +34,14 @@ public:
 	void outputPathFile(char*, int **, int, int, int);
 	void output(char *, float **, int **, carArray &);
 private:
-	int numVertices;	//路口数量
-	int numEdges;		//道路数量
-	int **carTime;		//车辆到达的时间（最短路径算法）
-	ofstream out;
-	edge **edgesets;	//边集
+	int numVertices;		//路口数量
+	int numEdges;			//道路数量
+	int **carTime;			//车辆到达的时间（最短路径算法）
+	ofstream out;			//输出文件流
+	edge **edgesets;		//边集
 
-	ifstream car;	
-	ifstream crossAndroad;//文件读取流
+	ifstream car;			//读入车辆文件流
+	ifstream crossAndroad;	//文件读取流
 };
 
 adjacencyWDigraph::adjacencyWDigraph()
@@ -80,7 +80,6 @@ adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
 adjacencyWDigraph::~adjacencyWDigraph()
 {
 	//析构函数
-	
 	for (int i = 0; i <= numVertices; i++)
 		delete[] edgesets[i];
 
@@ -91,6 +90,7 @@ adjacencyWDigraph::~adjacencyWDigraph()
 
 bool adjacencyWDigraph::iniRoad(const char* fileName)
 {
+	///需要完成的事情:对成员变量进行初始化并根据文件的大小生成地图信息
 	//初始化函数，将读入的文件填写到图中
 	string infile;
 	crossAndroad.open(fileName, ios::in | ios::out);
@@ -115,11 +115,8 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 		//初始化每条道路的二维数组
 		vector<int> temp(length + 1, 0);
 		for (int i = 0; i <= channel; i++)
-		{
 			insert->road.push_back(temp);
-		}
 		
-
 		//如果是双向车道的道路
 		if (single == 1)
 		{
@@ -132,15 +129,13 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 
 			vector<int> temp(length + 1, 0);
 			for (int i = 0; i <= channel; i++)
-			{
 				insert->road.push_back(temp);
-			}
-
 		}
 	}
 	crossAndroad.close();
 	return true;
 }
+
 bool adjacencyWDigraph::iniRoad2(const char* fileName)
 {
 	//初始化函数，将读入的文件填写到图中
@@ -212,11 +207,11 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 				}
 			}
 		}
-		
 	}
 	crossAndroad.close();
 	return true;
 }
+
 void adjacencyWDigraph::output()
 {
 	for (int i = 1; i <= numVertices; i++)
@@ -248,17 +243,13 @@ void adjacencyWDigraph::allpairs(float **c, int **kay)
 	for (int k = 1; k <= numVertices; k++)
 		for (int i = 1; i <= numVertices; i++)
 			for (int j = 1; j <= numVertices; j++)
-        //找到c[i][j]的较小值
+				//找到c[i][j]的较小值
 				if (c[i][k] != INF && c[k][j] != INF && (c[i][j] ==INF || c[i][j] > c[i][k] + c[k][j]))
 				{
 					c[i][j] = c[i][k] + c[k][j];
 					kay[i][j] = k;
 				}
 }
-//int *adjacencyWDigraph::findPath(int theSource ,int theDestitination)
-//{//寻找一条从theSource到theDestination的最短路径
-
-//}
 
 //获取从i到j的边，如果不存在则返回负边
 edge& adjacencyWDigraph::getEdge(int i, int j)
@@ -275,8 +266,6 @@ edge& adjacencyWDigraph::getEdge(int i, int j)
 	}
 }
 
-
-
 //输出路径的实际代码
 void outputPath(int **kay, int i, int j)
 {
@@ -290,6 +279,7 @@ void outputPath(int **kay, int i, int j)
 		outputPath(kay, kay[i][j], j);
 	}
 }
+
 //输出从i到j的最短路径，输出的是顶点序列
 void outputPath(int **c, int **kay, int i, int j)
 {
@@ -313,7 +303,6 @@ void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, ad
 		dot.push_back(j);
 		path.push_back(object.getEdge(i, j).id);
 		//cout << j << " ";
-
 	}
 	else
 	{//kay[i][j]是路径上的一个中间顶点
@@ -336,6 +325,7 @@ void outputPath(float **c, int **kay, int i, int j, vector<int> &path, vector<in
 	}
 }
 
+//寻路求先驱
 void adjacencyWDigraph::outputPathFile(char *path, int **kay, int i, int j,int k)
 {
 	if (i == j)
@@ -357,6 +347,7 @@ void adjacencyWDigraph::outputPathFile(char *path, int **kay, int i, int j,int k
 		//out.close();
 	}
 }
+
 void adjacencyWDigraph::outputPathFile(char* path, float **c, int **kay, int k,int h,int i, int j)
 {
 	//参数分别为路径名称，最短路径数组，前驱数组，车辆id，车辆出发时间，车辆起始路口和目的路口

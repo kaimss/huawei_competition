@@ -18,6 +18,7 @@ using namespace std;
 class adjacencyWDigraph
 {
 public:
+	adjacencyWDigraph();	//增加默认的构造函数，以便使用 initRoad() 进行初始化
 	adjacencyWDigraph(int numOfVertices = 3);
 	~adjacencyWDigraph();
 
@@ -33,15 +34,24 @@ public:
 	void outputPathFile(char*, int **, int, int, int);
 	void output(char *, float **, int **, carArray &);
 private:
-	int numVertices;
-	int numEdges;
-	int **carTime;
+	int numVertices;	//路口数量
+	int numEdges;		//道路数量
+	int **carTime;		//车辆到达的时间（最短路径算法）
 	ofstream out;
-	edge **edgesets;
+	edge **edgesets;	//边集
 
 	ifstream car;	
 	ifstream crossAndroad;//文件读取流
 };
+
+adjacencyWDigraph::adjacencyWDigraph()
+{
+	//默认的构造函数
+	numVertices = 0;
+	numEdges = 0;
+	carTime = NULL;
+	edgesets = NULL;
+}
 
 adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
 {

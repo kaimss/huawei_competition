@@ -8,6 +8,7 @@
 #include <vector>
 #include <fstream>
 #include <cstdlib>
+#include "car.h"
 #include "carArray.h"
 #include "edge.h"
 
@@ -27,12 +28,17 @@ public:
 	bool iniRoad2(const char* fileName);//初始化道路数据之二，参数为文件路径
 	void output();//输出矩阵
 	void allpairs(float **, int **);//任意两点之间的最短路径
+	void shortestPaths(float** c, int sourceVertex, float* distanceFromSource, int* predecessor);//两点间最短路径
 
 	edge& getEdge(int i, int j);//返回从i到j的路径
 	//void floyid(char *, int **,int **);
-	void outputPathFile(char*, float **,int **,int,int,int,int,int&);
+
+	void dynamicselect(char* path, carArray& carsets, vector<pair<int, int>>  &carTime);//通过pair中的排序更新边权重，
+																						//然后再求最短路径
+	void outputPathFile(char*, float **,int **,int,int,int,int,int&);//通过车的信息输出此车的路径至文件
 	void outputPathFile(char*, int **, int, int, int);
-	void output(char *, float **, int **, carArray &,int &);
+
+	void output(char *, float **, int **, carArray &,int &);//输出所有车的路径至文件，调用了上上个函数
 private:
 	int numVertices;	//路口数量
 	int numEdges;		//道路数量
@@ -40,7 +46,7 @@ private:
 	ofstream out;
 	edge **edgesets;	//边集
 
-	ifstream car;	
+	ofstream carstream;	
 	ifstream crossAndroad;//文件读取流
 };
 
@@ -255,10 +261,203 @@ void adjacencyWDigraph::allpairs(float **c, int **kay)
 					kay[i][j] = k;
 				}
 }
-//int *adjacencyWDigraph::findPath(int theSource ,int theDestitination)
-//{//寻找一条从theSource到theDestination的最短路径
 
-//}
+//
+void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair<int, int>>  &carTime)
+{
+
+	float **c = new float*[numVertices +1];
+	for (int i = 0; i <= numVertices; i++)	
+	{
+		c[i] = new float[numVertices + 1];
+	}
+	//初始化c[i][j]
+	for (int i = 1; i <= numVertices; i++)
+	{
+		for (int j = 1; j <= numVertices; j++)
+		{
+			c[i][j] = edgesets[i][j].depend();
+		}
+	}
+
+
+	float* distanceFromSource = new float[numVertices + 1];
+	int* predecessor = new int[numVertices + 1];
+
+
+	int id = 0;
+	
+	int pre = 0;
+	int source, destination;
+	for (int m = carTime.size() - 1; m >= 0; m--)
+	{
+		id = carTime[m].first;
+		car &acar = carsets.getCar(id - 10000);
+		
+		source = acar.from;
+		destination = acar.to;
+
+		//按照一定规则调整边权
+		for (int i = 1; i <= numVertices; i++)
+		{
+			for (int j = 1; j <= numVertices; j++)
+			{
+				if (edgesets[i][j].maxSpeed != 0)
+				{
+					if(edgesets[i][j].maxSpeed < acar.maxSpeed)
+					   c[i][j] += (float) (acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
+				}
+				    
+			}
+		}
+		shortestPaths(c, acar.from, distanceFromSource, predecessor);//通过c就算两点间最短距离
+
+		
+
+		//恢复边权												
+		for (int i = 1; i <= numVertices; i++)
+		{
+			for (int j = 1; j <= numVertices ; j++)
+			{
+				if (edgesets[i][j].maxSpeed < acar.maxSpeed)
+					c[i][j] -= (float)(acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
+			}
+		}
+
+
+		if (distanceFromSource[destination] + 1 > INF)
+		{
+			cout << "noreachable\n";
+			throw UNKNOWN_PROBLEM;
+			exit(1);
+		}
+
+
+
+
+		//通过前驱数组计算点序列
+		pre = destination;
+		while (pre != 0)
+		{
+			acar.dot.insert(acar.dot.begin(), pre);
+			pre = predecessor[pre];
+		}
+		
+		acar.path.clear();
+		acar.path.resize(acar.dot.size() - 1);
+
+		//通过点序列获得边序列
+		for (int i = 0; i < acar.dot.size() - 1; i++)
+		{
+			acar.path[i] = edgesets[acar.dot[i]][acar.dot[i + 1]].id;
+
+			//更新c[i][j]
+			//(edgesets[acar.dot[i]][acar.dot[i + 1]].road[0][0])++;
+
+		}
+		
+
+	}
+
+	delete [] distanceFromSource;
+	delete [] predecessor;
+
+
+
+	carstream.open(path, ios::out);
+	carstream.close();
+	carstream.open(path, ios::app);
+	car tempcar;
+	int tempsize = 0;
+
+	for (int i = 0; i < carsets.getNumber(); i++)
+	{
+		tempcar = carsets.getCar(i);
+		tempsize = tempcar.path.size();
+		if (tempsize < 2)
+		{
+			continue;
+		}
+
+		carstream << "(" << carsets.getCar(i).id << "," << carsets.getCar(i).planTime << ",";
+		for (int j = 0; j < tempsize - 1; j++)
+		{
+			carstream << tempcar.path[j] << ",";
+		}
+		carstream << tempcar.path[tempsize - 1] << ")\n";
+
+	}
+
+}
+
+//
+void adjacencyWDigraph::shortestPaths(float** c, int sourceVertex, float* distanceFromSource, int* predecessor)
+{//寻找一条从sourceVertex到其他点的最短路径
+ //在数组distanceFromSource中返回最短路径
+ //在数组prdecessor中返回顶点在路径上的前驱的information
+	vector<int> newReachableVertices;
+	for (int i = 1; i <= numVertices; i++)
+	{
+		distanceFromSource[i] = c[sourceVertex][i];
+		if (distanceFromSource[i] + 1 > INF)
+			predecessor[i] = -1;
+		else
+		{
+
+			predecessor[i] = sourceVertex;
+			newReachableVertices.insert(newReachableVertices.begin(), i);
+
+		}
+
+
+	}
+	distanceFromSource[sourceVertex] = 0;
+	predecessor[sourceVertex] = 0;  // source vertex has no predecessor
+
+									// update distanceFromSource and predecessor
+	while (!newReachableVertices.empty())
+	{// more paths exist
+	 // find unreached vertex v with least distanceFromSource
+		vector<int>::iterator iNewReachableVertices
+			= newReachableVertices.begin();
+		vector<int>::iterator theEnd = newReachableVertices.end();
+		int v = *iNewReachableVertices;
+		iNewReachableVertices++;
+		while (iNewReachableVertices != theEnd)
+		{
+			int w = *iNewReachableVertices;
+			iNewReachableVertices++;
+			if (distanceFromSource[w] < distanceFromSource[v])
+				v = w;
+		}
+
+		// next shortest path is to vertex v, delete v from
+		// newReachableVertices and update distanceFromSource
+		for (int i = 0; i <= newReachableVertices.size(); i++)
+		{
+			if (newReachableVertices[i] == v)
+			{
+				newReachableVertices.erase(newReachableVertices.begin() + i);
+				break;
+			}
+		}
+
+		for (int j = 1; j <= numVertices; j++)
+		{
+			if (edgesets[v][j] != INF && (predecessor[j] == -1 ||
+				distanceFromSource[j] > distanceFromSource[v] + c[v][j]))
+			{
+				// distanceFromSource[j] decreases
+				distanceFromSource[j] = distanceFromSource[v] + c[v][j];
+				// add j to newReachableVertices
+				if (predecessor[j] == -1)
+					// not reached before
+					newReachableVertices.insert(newReachableVertices.begin(), j);
+				predecessor[j] = v;
+			}
+		}
+	}
+}
 
 //获取从i到j的边，如果不存在则返回负边
 edge& adjacencyWDigraph::getEdge(int i, int j)
@@ -276,66 +475,7 @@ edge& adjacencyWDigraph::getEdge(int i, int j)
 }
 
 
-
-//输出路径的实际代码
-void outputPath(int **kay, int i, int j)
-{
-	if (i == j)
-		return;
-	if (kay[i][j] == 0)//路径上没有中间顶点
-		cout << j << " ";
-	else
-	{//kay[i][j]是路径上的一个中间顶点
-		outputPath(kay, i, kay[i][j]);
-		outputPath(kay, kay[i][j], j);
-	}
-}
-//输出从i到j的最短路径，输出的是顶点序列
-void outputPath(int **c, int **kay, int i, int j)
-{
-	if (c[i][j] == INF)
-		cout << "there is no path from " << i << "to" << j << endl;
-	else
-	{
-		cout << "the path is" << i << " ";
-		outputPath(kay, i, j);
-		cout << endl;
-	}
-}
-
-//实际输出路径至path中，path中将存储边的序列
-void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
-{
-	if (i == j)
-		return;
-	if (kay[i][j] == 0)//路径上没有中间顶点
-	{
-		dot.push_back(j);
-		path.push_back(object.getEdge(i, j).id);
-		//cout << j << " ";
-
-	}
-	else
-	{//kay[i][j]是路径上的一个中间顶点
-		outputPath(kay, i, kay[i][j], path, dot, object);
-		outputPath(kay, kay[i][j], j, path, dot, object);
-	}
-}
-//输出路径至path中，path中将存储边的序列
-//可以减少参数，通过结构体car
-void outputPath(float **c, int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
-{
-	if (c[i][j] == INF)
-		cout << "there is no path from " << i << "to" << j << endl;
-	else
-	{
-		//cout << "the path is" << i << " ";
-		dot.push_back(i);
-		outputPath(kay, i, j, path, dot, object);
-		//cout << endl;
-	}
-}
-
+//
 void adjacencyWDigraph::outputPathFile(char *path, int **kay, int i, int j,int k)
 {
 	if (i == j)
@@ -357,8 +497,7 @@ void adjacencyWDigraph::outputPathFile(char *path, int **kay, int i, int j,int k
 		//out.close();
 	}
 }
-
-
+//
 void adjacencyWDigraph::outputPathFile(char* path, float **c, int **kay, int k,int h,int i, int j,int &count)
 
 {
@@ -378,6 +517,9 @@ void adjacencyWDigraph::outputPathFile(char* path, float **c, int **kay, int k,i
 		count++;
 	}
 }
+
+
+//
 void adjacencyWDigraph::output(char* path, float **c, int **kay, carArray &cars,int &count)
 {
 	out.open(path, ios::out);
@@ -410,5 +552,77 @@ void adjacencyWDigraph::output(char* path, float **c, int **kay, carArray &cars,
 		//cout << "保存成功";
     }
 }*/
+
+
+
+
+//输出路径的实际代码
+void outputPath(int **kay, int i, int j)
+{
+	if (i == j)
+		return;
+	if (kay[i][j] == 0)//路径上没有中间顶点
+		cout << j << " ";
+	else
+	{//kay[i][j]是路径上的一个中间顶点
+		outputPath(kay, i, kay[i][j]);
+		outputPath(kay, kay[i][j], j);
+	}
+}
+//输出从i到j的最短路径至终端，输出的是顶点序列
+void outputPath(int **c, int **kay, int i, int j)
+{
+	if (c[i][j] == INF)
+		cout << "there is no path from " << i << "to" << j << endl;
+	else
+	{
+		cout << "the path is" << i << " ";
+		outputPath(kay, i, j);
+		cout << endl;
+	}
+}
+
+
+
+
+
+
+
+
+//实际输出路径至path中，path中将存储边的序列
+void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
+{
+	if (i == j)
+		return;
+	if (kay[i][j] == 0)//路径上没有中间顶点
+	{
+		dot.push_back(j);
+		path.push_back(object.getEdge(i, j).id);
+		//cout << j << " ";
+
+	}
+	else
+	{//kay[i][j]是路径上的一个中间顶点
+		outputPath(kay, i, kay[i][j], path, dot, object);
+		outputPath(kay, kay[i][j], j, path, dot, object);
+	}
+}
+//输出路径至car结构体的path中，path中将存储边的序列
+//可以减少参数，通过结构体car
+void outputPath(float **c, int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)
+{
+	if (c[i][j] == INF)
+		cout << "there is no path from " << i << "to" << j << endl;
+	else
+	{
+		//cout << "the path is" << i << " ";
+		dot.push_back(i);
+		outputPath(kay, i, j, path, dot, object);
+		//cout << endl;
+	}
+}
+
+
+
 
 #endif

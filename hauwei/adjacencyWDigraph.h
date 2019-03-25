@@ -369,7 +369,7 @@ void adjacencyWDigraph::outputPathFile(char* path, float **c, int **kay, int k,i
 			out << "there is  no path from " << i << "to" << j << endl;
 		else
 		{
-			out <<"("<<k<<","<< h+(count%500)<<",";
+			out <<"("<<k<<","<< h<<",";
 			//carTime[k - 10000][0] = k;
 			//carTime[k - 10000][1] = h;
 			outputPathFile(path, kay, i, j,j);
@@ -383,7 +383,8 @@ void adjacencyWDigraph::output(char* path, float **c, int **kay, carArray &cars,
 	out.open(path, ios::out);
 	out.close();
 	out.open(path, ios::app);
-	for (int i = cars.getNumber()-1; i >=0; i--)
+	for (int i = 0; i < cars.getNumber(); i++)
+	//for (int i = cars.getNumber()-1; i >=0; i--)
 		if (out)
 			outputPathFile(path, c, kay, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to,count);
 	out.close();

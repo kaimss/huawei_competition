@@ -297,25 +297,19 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 		source = acar.from;
 		destination = acar.to;
 
-		//按照车速调整边权
+		//按照一定规则调整边权
 		for (int i = 1; i <= numVertices; i++)
 		{
 			for (int j = 1; j <= numVertices; j++)
 			{
 				if (edgesets[i][j].maxSpeed != 0)
 				{
-					//cout << c[i][j]<<"\t";
 					if(edgesets[i][j].maxSpeed < acar.maxSpeed)
 					   c[i][j] += (float) (acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
-					//c[i][j] += float(edgesets[i][j].road[0][0]) / float(edgesets[i][j].length * edgesets[i][j].channel);
-					//c[i][j] += (acar.maxSpeed - edgesets[i][j].maxSpeed)/ (acar.maxSpeed + 0.0);
-					//cout << (acar.maxSpeed - edgesets[i][j].maxSpeed) / (acar.maxSpeed + 0.0) << "\t";
-					//cout << c[i][j] << "\n";
 				}
 				    
 			}
 		}
-		c = c;
 		shortestPaths(c, acar.from, distanceFromSource, predecessor);//通过c就算两点间最短距离
 
 		
@@ -341,39 +335,27 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 
 
 
+		//通过前驱数组计算点序列
 		pre = destination;
-		
 		while (pre != 0)
 		{
 			acar.dot.insert(acar.dot.begin(), pre);
-			//cout << "pre = " << pre << "[pre]" << predecessor[pre] << "\n";
 			pre = predecessor[pre];
 		}
 		
 		acar.path.clear();
 		acar.path.resize(acar.dot.size() - 1);
 
+		//通过点序列获得边序列
 		for (int i = 0; i < acar.dot.size() - 1; i++)
 		{
 			acar.path[i] = edgesets[acar.dot[i]][acar.dot[i + 1]].id;
 
 			//更新c[i][j]
-			(edgesets[acar.dot[i]][acar.dot[i + 1]].road[0][0])++;
-			//
+			//(edgesets[acar.dot[i]][acar.dot[i + 1]].road[0][0])++;
 
 		}
-		//int tempsize = acar.path.size();
-		//if (tempsize < 2)
-		//{
-		//	continue;
-		//}
-
-		//cout << "(" << acar.id << "," << acar.planTime << ",";
-		//for (int j = 0; j < tempsize - 1; j++)
-		//{
-		//	cout << acar.path[j] << ",";
-		//}
-		//cout << acar.path[tempsize - 1] << ")\n";
+		
 
 	}
 

@@ -16,9 +16,8 @@ struct car
 	int toTime;//到达时间
 	int second;//调度时间
 	vector<int> dot;//规划途径路口
-	vector<int> adot;//实际途径路口
 	vector<int> path;//规划路径
-	vector<int> apath;//实际路径
+
 
 	int croad;//当前所在道路
 	int cspeed;//当前行驶速度，等于min(道路限速，前方车辆的速度限制，自身最大速度)
@@ -35,6 +34,7 @@ struct car
 
 	car(int id, int from, int to, int maxSpeed,int planTime, int second) :
 		id(id), from(from), to(to), maxSpeed(maxSpeed), planTime(planTime), second(second) {}
+
 
 	friend ostream& operator << (ostream &out, const car &p);//重载输出流，输出内容待定（使用时需要引入头文件及定义命名空间）
 };

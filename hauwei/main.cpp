@@ -60,7 +60,7 @@ int main(int argc, char** argv)
 		outputPath(a, b, cars.getCar(index).from, cars.getCar(index).to, cars.getCar(index).path, cars.getCar(index).dot, graph);
 		//尝试调度一辆车
 		dispatch(graph, cars.getCar(index));
-		carTime[index].first = index+10000;		///这个需要改
+		carTime[index].first = index + 10000;		///这个需要改
 		carTime[index].second = cars.getCar(index).planTime + cars.getCar(index).second;
 		//cout << cars.getCar(index).id << " " << cars.getCar(index).planTime << " "<<cars.getCar(index).second << " " << cars.getCar(index).planTime + cars.getCar(index).second<<endl;
 	}*/
@@ -74,9 +74,9 @@ int main(int argc, char** argv)
 	int count=0;
 	//for (int index = 0; index < 10240; index++)
 	//	cout << carTime[index].first << " " << carTime[index].second<<endl;
-	graph.output(argv[4], a, b, cars,count);
+	//graph.output(argv[4], a, b, cars,count);
 	//for (int i = cars.getNumber()-1; i >= 0; i--)
 	//	graph.outputPathFile(argv[4], a, b, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to,count);
-
+	graph.dynamicselect(argv[4], cars, carTime);
 	return 0;
 }

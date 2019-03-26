@@ -303,7 +303,6 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 					if(edgesets[i][j].maxSpeed < acar.maxSpeed)
 					   c[i][j] += (float) (acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
 					//添加车数量对路径的影响
-					c[i][j] += 
 				}
 				    
 			}

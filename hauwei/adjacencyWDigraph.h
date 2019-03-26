@@ -257,7 +257,7 @@ void adjacencyWDigraph::allpairs(float **c, int **kay)
 				}
 }
 
-//
+//暂时的动态调度
 void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair<int, int>>  &carTime)
 {
 
@@ -307,6 +307,7 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 				    
 			}
 		}
+
 		shortestPaths(c, acar.from, distanceFromSource, predecessor);//通过c就算两点间最短距离
 
 		
@@ -322,12 +323,12 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 		}
 
 
-		if (distanceFromSource[destination] + 1 > INF)
-		{
-			cout << "noreachable\n";
-			throw UNKNOWN_PROBLEM;
-			exit(1);
-		}
+		//if (distanceFromSource[destination] + 1 > INF)
+		//{
+		//	cout << "noreachable\n";
+		//	throw UNKNOWN_PROBLEM;
+		//	exit(1);
+		//}
 
 
 
@@ -349,7 +350,9 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 			acar.path[i] = edgesets[acar.dot[i]][acar.dot[i + 1]].id;
 
 			//更新c[i][j]
-			//(edgesets[acar.dot[i]][acar.dot[i + 1]].road[0][0])++;
+			edge &tempedge = edgesets[acar.dot[i]][acar.dot[i + 1]];
+			(tempedge.road[0][0])++;
+			c[acar.dot[i]][acar.dot[i + 1]] += 0.1;
 
 		}
 		

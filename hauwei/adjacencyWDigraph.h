@@ -142,6 +142,7 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 	crossAndroad.close();
 	return true;
 }
+
 bool adjacencyWDigraph::iniRoad2(const char* fileName)
 {
 	//初始化函数，将读入的文件填写到图中
@@ -213,7 +214,6 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 				}
 			}
 		}
-		
 	}
 	crossAndroad.close();
 	return true;
@@ -300,9 +300,10 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 				if (edgesets[i][j].maxSpeed != 0)
 				{
 					//添加车辆限速对路径的影响
-					if(edgesets[i][j].maxSpeed < acar.maxSpeed)
-					   c[i][j] += (float) (acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
-					//添加车数量对路径的影响
+					if (edgesets[i][j].maxSpeed < acar.maxSpeed)
+						c[i][j] += (float)(acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
+					if (edgesets[i][j].maxSpeed != 0)
+						c[i][j] += (edgesets[i][j].road[0][0]) / (edgesets[i][j].length * edgesets[i][j].channel);
 				}
 				    
 			}
@@ -319,6 +320,8 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 			{
 				if (edgesets[i][j].maxSpeed < acar.maxSpeed)
 					c[i][j] -= (float)(acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
+				if(edgesets[i][j].maxSpeed != 0)
+					c[i][j] -= (edgesets[i][j].road[0][0]) / (edgesets[i][j].length * edgesets[i][j].channel);
 			}
 		}
 

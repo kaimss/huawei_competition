@@ -84,20 +84,16 @@ adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
 }
 
 adjacencyWDigraph::~adjacencyWDigraph()
-{
-	//析构函数
-	
+{	//析构函数
 	for (int i = 0; i <= numVertices; i++)
 		delete[] edgesets[i];
 
 	delete[] edgesets;
 	edgesets = NULL;
-	
 }
 
 bool adjacencyWDigraph::iniRoad(const char* fileName)
-{
-	//初始化函数，将读入的文件填写到图中
+{	//初始化函数，将读入的文件填写到图中
 	string infile;
 	crossAndroad.open(fileName, ios::in | ios::out);
 	if (!crossAndroad.is_open()) {
@@ -125,7 +121,6 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 			insert->road.push_back(temp);
 		}
 		
-
 		//如果是双向车道的道路
 		if (single == 1)
 		{
@@ -304,8 +299,11 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 			{
 				if (edgesets[i][j].maxSpeed != 0)
 				{
+					//添加车辆限速对路径的影响
 					if(edgesets[i][j].maxSpeed < acar.maxSpeed)
 					   c[i][j] += (float) (acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
+					//添加车数量对路径的影响
+					c[i][j] += 
 				}
 				    
 			}

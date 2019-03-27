@@ -12,6 +12,7 @@ public:
 		const char* carFilePath, const char* answerFilePath);
 	map(const map& theMap);
 	~map();
+	bool iniRoad(const char* roadFilePath);
 
 private:
 	int numRoads;
@@ -173,6 +174,23 @@ bool map::initRoute(const char* answerFilePath)
 			getline(crossStream, infile);
 		else//否则按格式读取
 		{
+			char str[4];
+
+			crossStream.getline(str, 10, ',');//读id
+			id = std::atoi(str);
+			crossStream.getline(str, 10, ',');//读scheduledTime
+			scheduledTime = std::atoi(str);
+			while (crossStream.getline(str, 5))//读路径
+			{
+				cout << "Read from file: " << str << endl;
+				one = crossStream.get();
+				crossMap->at(i).adjaRoadID.push_back(std::atoi(str));
+				i++;
+				if (one == ')')
+					break;
+			}
+			one = crossStream.get();//读掉换行符
+
 			///------------------------------------------------------------------
 			///------------------------------------------------------------------
 			///------------------------------------------------------------------

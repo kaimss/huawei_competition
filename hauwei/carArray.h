@@ -77,7 +77,7 @@ bool carArray::iniCar2(const char* fileName)
 			carstream.getline(str, 10, ',');
 			id = std::atoi(str);
 
-			carstream.getline(str, 10, ',');
+			carstream.getline(str, 5, ',');
 			from = std::atoi(str);
 
 			carstream.getline(str, 10, ',');

@@ -9,7 +9,8 @@ struct car
 {
 	car() :carID(0), deparID(0), destID(0), maxCarSpeed(0), planTime(0), realTime(0), status(UNUSED)
 	{
-		routine = NULL;
+		routine = new vector<int>(10);
+		routine->resize(10);
 	}
 
 	car(int theCarID, int theDeparID, int theDestID, int theMaxCarSpeed, int thePlanTime) :
@@ -17,7 +18,7 @@ struct car
 	{
 		status = WAITING;
 		realTime = thePlanTime;
-		routine = new vector<int>();
+		routine = new vector<int>(10);
 		routine->resize(10);
 	}
 
@@ -33,9 +34,7 @@ struct car
 	int planTime;
 	int realTime;
 	carStatus status;
-
 	vector<int> *routine;	//³µÁ¾Â·Ïß
 };
-
 
 #endif

@@ -19,6 +19,8 @@ public:
 		if (search != carsets->begin())
 			return carsets->at(search - carsets->begin());
 	}
+
+	void resize(int size) { carsets->resize(size); }
 private:
 	vector<car> *carsets;
 	ifstream carstream;

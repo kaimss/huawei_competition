@@ -166,41 +166,33 @@ bool map::initRoute(const char* answerFilePath)
 	}
 	int id, scheduledTime, passNode;
 	int i = 0;//行计数器，用于重新调整vector容器大小
-	while (!crossStream.eof())
+	while (!routeStream.eof())
 	{
-		one = crossStream.get();//读掉左括号或者'#'
+		one = routeStream.get();//读掉左括号或者'#'
 		if (one == '#')//如果读到的是'#'则忽略这一行
-			getline(crossStream, infile);
+			getline(routeStream, infile);
 		else//否则按格式读取
 		{
-			///------------------------------------------------------------------
-			///------------------------------------------------------------------
-			///------------------------------------------------------------------
-			///------------------------------------------------------------------
-			///------------------------------------------------------------------
-			///------------------------------------------------------------------
-			///------------------------------------------------------------------
-			///------------------------------------------------------------------
-			///------------------------------------------------------------------
-			///------------------------------------------------------------------
-
-			crossStream.getline(str, 10, ',');
-			crossMap->at(i).adjaRoadID.push_back(std::atoi(str));
-
-			crossStream.getline(str, 10, ',');
-			crossMap->at(i).adjaRoadID.push_back(std::atoi(str));
-
-			crossStream.getline(str, 10, ',');
-			crossMap->at(i).adjaRoadID.push_back(std::atoi(str));
-
-			crossStream.getline(str, 10, ',');
-			crossMap->at(i).adjaRoadID.push_back(std::atoi(str));
+			char str[4];
+			routeStream.getline(str, 10, ',');//读id
+			id = std::atoi(str);
+			routeStream.getline(str, 10, ',');//读scheduledTime
+			carlist->getCar(id).realTime = std::atoi(str);
+			while (routeStream.getline(str, 5))//读路径
+			{
+				cout << "Read from file: " << str << endl;
+				one = routeStream.get();
+				carlist->getCar(id).routine->push_back(std::atoi(str));
+				i++;
+				if (one == ')')
+					break;
+			}
+			one = routeStream.get();//读掉换行符
 			i++;
 		}
 	}
-	crossMap->resize(i);//调整容器大小
-	crossStream.close();
+	carlist->resize(i);
+	routeStream.close();
 }
-
 
 #endif

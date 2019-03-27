@@ -46,7 +46,7 @@ bool map::initRoad(const char* roadFilePath)
 		cout << "请先加载道路文件!" << endl;
 		return false;
 	}
-	roadMap = new vector<vector<road>>(roads, vector<road>(roads));
+	roadMap = new vector<vector<road>>(roads + 1, vector<road>(roads + 1));
 
 	roadStream.open(roadFilePath, ios::in | ios::out);
 	if (!roadStream.is_open()) {
@@ -87,11 +87,11 @@ bool map::initRoad(const char* roadFilePath)
 
 			one = roadStream.get();//读掉换行符
 
-			//cout << id << length << maxSpeed << channel << start << dest << single << endl;
 			roadMap->at(start).at(dest).id = id;
 			roadMap->at(start).at(dest).length = length;
 			roadMap->at(start).at(dest).maxRoadSpeed = maxSpeed;
 			roadMap->at(start).at(dest).channels = channel;
+			//roadMap->at(start).at(dest).disp();	debug 用
 			numRoads++;
 
 			vector<int> temp(length + 1, 0);
@@ -104,6 +104,7 @@ bool map::initRoad(const char* roadFilePath)
 				roadMap->at(dest).at(start).length = length;
 				roadMap->at(dest).at(start).maxRoadSpeed = maxSpeed;
 				roadMap->at(dest).at(start).channels = channel;
+				//roadMap->at(dest).at(start).disp();	debug 用
 				numRoads++;
 				vector<int> temp(length + 1, 0);
 				for (int i = 0; i <= channel; i++)
@@ -117,6 +118,7 @@ bool map::initRoad(const char* roadFilePath)
 
 bool map::initCross(const char* crossFilePath)
 {
+	crossMap = new vector<cross>();
 	//初始化函数，将读入的文件填写路口
 	string infile;
 	char str[10], one;
@@ -130,23 +132,31 @@ bool map::initCross(const char* crossFilePath)
 	int i = 0;//行计数器，用于重新调整vector容器大小
 	while (!crossStream.eof())
 	{
+		int crossID = 0;
 		one = crossStream.get();//读掉左括号或者'#'
 		if (one == '#')//如果读到的是'#'则忽略这一行
 			getline(crossStream, infile);
 		else//否则按格式读取
 		{
 			crossStream.getline(str, 10, ',');
-			crossMap->at(i).adjaRoadID.push_back(std::atoi(str));
+			crossID = std::atoi(str);
+			crossMap->at(crossID).id = crossID;
 
 			crossStream.getline(str, 10, ',');
-			crossMap->at(i).adjaRoadID.push_back(std::atoi(str));
+			crossMap->at(crossID).adjaRoadID.push_back(std::atoi(str));
 
 			crossStream.getline(str, 10, ',');
-			crossMap->at(i).adjaRoadID.push_back(std::atoi(str));
+			crossMap->at(crossID).adjaRoadID.push_back(std::atoi(str));
+
+			crossStream.getline(str, 10, ',');
+			crossMap->at(crossID).adjaRoadID.push_back(std::atoi(str));
 
 			crossStream.getline(str, 10, ')');
-			crossMap->at(i).adjaRoadID.push_back(std::atoi(str));
+			crossMap->at(crossID).adjaRoadID.push_back(std::atoi(str));
+
+			//crossMap->at(crossID).disp();	debug 用
 			i++;
+			one = crossStream.get();
 		}
 	}
 	crossMap->resize(i);//调整容器大小
@@ -158,7 +168,7 @@ bool map::initRoute(const char* answerFilePath)
 	//初始化函数，将读入的文件填写路口
 	string infile;
 	char str[10], one;
-	crossMap->resize(100);	//初始化
+	crossMap->resize(20000);	//初始化
 	routeStream.open(answerFilePath, ios::in | ios::out);
 	if (!routeStream.is_open()) {
 		cout << "文件打开错误" << endl;
@@ -173,9 +183,9 @@ bool map::initRoute(const char* answerFilePath)
 			getline(routeStream, infile);
 		else//否则按格式读取
 		{
-			char str[4];
+			char str[10];
 			routeStream.getline(str, 10, ',');//读id
-			id = std::atoi(str);
+			id = std::atoi(str) - carlist->firstID();
 			routeStream.getline(str, 10, ',');//读scheduledTime
 			carlist->getCar(id).realTime = std::atoi(str);
 			while (routeStream.getline(str, 5))//读路径

@@ -14,29 +14,35 @@ public:
 	{
 		if (carsets->size() == 0)
 			throw UNKNOWN_METHOD;
-		car theCar(id, 0, 0, 0, 0);
-		vector<car>::iterator search = find(carsets->begin(), carsets->end(), theCar);
+		vector<car>::iterator search = find(carsets->begin(), carsets->end(), id);
 		if (search != carsets->begin())
 			return carsets->at(search - carsets->begin());
 	}
+
+	void resize(int size) { carsets->resize(size); }
+	int firstID() { return firstCarID; }
+
 private:
 	vector<car> *carsets;
 	ifstream carstream;
+	int firstCarID;
+	bool isRead;
 };
 
 carList::carList(const char* filePath)
 {
+	isRead = false;
 	carsets = new vector<car>();
 	//初始化函数，将读入的文件填写到车数组中
 	string infile;
 	char str[10], one;
-	carsets->resize(100);//初始化有container辆车，后面可以修改大小
+	carsets->resize(20000);//初始化有container辆车，后面可以修改大小
 	carstream.open(filePath, ios::in | ios::out);
 	if (!carstream.is_open()) {
 		cout << "文件打开错误" << endl;
 		throw UNKNOWN_METHOD;
 	}
-	int id, from, to, speed, planTime;
+	int id = 0, from = 0, to = 0, speed = 0, planTime = 0;
 	int i = 0;//行计数器，用于重新调整vector容器大小
 	while (!carstream.eof())
 	{
@@ -48,6 +54,11 @@ carList::carList(const char* filePath)
 			carstream.getline(str, 10, ',');
 			carsets->at(i).carID = std::atoi(str);
 
+			if (!isRead) {
+				firstCarID = std::atoi(str);
+				isRead = true;
+			}
+
 			carstream.getline(str, 10, ',');
 			carsets->at(i).deparID = std::atoi(str);
 
@@ -55,13 +66,15 @@ carList::carList(const char* filePath)
 			carsets->at(i).destID = std::atoi(str);
 
 			carstream.getline(str, 10, ',');
-			carsets->at(i) .maxCarSpeed= std::atoi(str);
+			carsets->at(i).maxCarSpeed= std::atoi(str);
 
 			carstream.getline(str, 10, ')');
 			carsets->at(i).planTime = std::atoi(str);
+			//carsets->at(i).disp();	debug 用
 			i++;
-			}
+			one = carstream.get();
 		}
+	}
 	carsets->resize(i);//调整容器大小
 	carstream.close();
 }

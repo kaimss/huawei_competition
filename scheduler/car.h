@@ -2,6 +2,14 @@
 #ifndef _CAR_
 #define _CAR_
 
+#include <vector>
+#include <iostream>
+
+using std::vector;
+using std::cin;
+using std::cout;
+using std::endl;
+
 enum carStatus { UNUSED, WAITING,  TERMINATE };
 //四种情况下的车状态
 
@@ -9,7 +17,8 @@ struct car
 {
 	car() :carID(0), deparID(0), destID(0), maxCarSpeed(0), planTime(0), realTime(0), status(UNUSED)
 	{
-		routine = NULL;
+		routine = new vector<int>(10);
+		routine->resize(10);
 	}
 
 	car(int theCarID, int theDeparID, int theDestID, int theMaxCarSpeed, int thePlanTime) :
@@ -17,14 +26,23 @@ struct car
 	{
 		status = WAITING;
 		realTime = thePlanTime;
-		routine = new vector<int>();
+		routine = new vector<int>(10);
 		routine->resize(10);
 	}
 
-	bool operator==(const car& theCar)
+	bool operator==(const int& id)
 	{
-		return this->carID == theCar.carID;
+		return carID == id;
 	}
+
+	void disp()
+	{
+		cout << carID << "," << deparID << "," << destID
+			<< "," << maxCarSpeed << "," << planTime
+			<< "," << realTime << "," << status << endl;
+	}
+
+	vector<int> *routine;	//车辆路线
 
 	int carID;
 	int deparID;
@@ -33,9 +51,6 @@ struct car
 	int planTime;
 	int realTime;
 	carStatus status;
-
-	vector<int> *routine;	//车辆路线
 };
-
 
 #endif

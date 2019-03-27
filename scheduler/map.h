@@ -186,13 +186,17 @@ bool map::initRoute(const char* answerFilePath)
 	int id, scheduledTime, passNode;
 	int sum = 0;
 	int i = 0;//行计数器，用于重新调整vector容器大小
+
 	while (!routeStream.eof())
 	{
 		one = routeStream.get();//读掉左括号或者'#'
+		if (routeStream.eof())
+			return true;
 		if (one == '#')//如果读到的是'#'则忽略这一行
 			getline(routeStream, infile);
 		else//否则按格式读取
 		{
+			cout << i << "\t";
 			char str[10];
 			routeStream.getline(str, 10, ',');//读id
 			id = std::atoi(str);

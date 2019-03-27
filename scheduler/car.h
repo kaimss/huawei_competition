@@ -17,8 +17,7 @@ struct car
 {
 	car() :carID(0), deparID(0), destID(0), maxCarSpeed(0), planTime(0), realTime(0), status(UNUSED)
 	{
-		routine = new vector<int>(10);
-		routine->resize(10);
+		routine = new vector<int>();
 	}
 
 	car(int theCarID, int theDeparID, int theDestID, int theMaxCarSpeed, int thePlanTime) :

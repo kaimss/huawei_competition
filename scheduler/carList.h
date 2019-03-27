@@ -14,10 +14,10 @@ public:
 	{
 		if (carsets->size() == 0)
 			throw UNKNOWN_METHOD;
-		vector<car>::iterator search = find(carsets->begin(), carsets->end(), id);
-		if (search != carsets->begin())
-			return carsets->at(search - carsets->begin());
+		return carsets->at(id - firstCarID);
 	}
+
+	car & operator[](std::size_t position) { return carsets->at(position); }
 
 	void resize(int size) { carsets->resize(size); }
 	int firstID() { return firstCarID; }

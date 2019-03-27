@@ -178,13 +178,13 @@ bool map::initRoute(const char* answerFilePath)
 	//初始化函数，将读入的文件填写路口
 	string infile;
 	char str[10], one;
-	crossMap->resize(20000);	//初始化
 	routeStream.open(answerFilePath, ios::in | ios::out);
 	if (!routeStream.is_open()) {
 		cout << "文件打开错误" << endl;
 		throw UNKNOWN_METHOD;
 	}
 	int id, scheduledTime, passNode;
+	int sum = 0;
 	int i = 0;//行计数器，用于重新调整vector容器大小
 	while (!routeStream.eof())
 	{
@@ -195,15 +195,21 @@ bool map::initRoute(const char* answerFilePath)
 		{
 			char str[10];
 			routeStream.getline(str, 10, ',');//读id
-			id = std::atoi(str) - carlist->firstID();
+			id = std::atoi(str);
 			routeStream.getline(str, 10, ',');//读scheduledTime
 			carlist->getCar(id).realTime = std::atoi(str);
-			while (routeStream.getline(str, 5))//读路径
+			
+			while (1)
 			{
-				cout << "Read from file: " << str << endl;
+				sum = 0;
 				one = routeStream.get();
-				carlist->getCar(id).routine->push_back(std::atoi(str));
-				i++;
+				while (one >= 48 && one <= 57)
+				{
+					sum = sum * 10 + (one - 48);
+					one = routeStream.get();
+
+				}
+				carlist->getCar(id).routine->push_back(sum);
 				if (one == ')')
 					break;
 			}
@@ -211,7 +217,6 @@ bool map::initRoute(const char* answerFilePath)
 			i++;
 		}
 	}
-	carlist->resize(i);
 	routeStream.close();
 }
 

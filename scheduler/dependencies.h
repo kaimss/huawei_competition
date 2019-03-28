@@ -27,5 +27,6 @@ using std::ifstream;
 using std::ofstream;
 using std::string;
 using std::ios;
+using std::pair;
 
 #endif

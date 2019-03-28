@@ -17,17 +17,18 @@ public:
 	~map();
 
 	//将车辆按照出发顺序进行排序，从前向后采用桶排序
-	void sortCars() { this->binSort(this->carlist); }
+	void sortCars(int range) { binSort(range); }
 	//进行车辆调度，成功返回 0 并设置最短运行时间和系统总调度时间
 	//失败返回死锁路口并报以死锁或者其他错误
 	//死锁返回路口编号，其他错误返回负值
 	int simulate(int& totalTimes, int& finishTime);
 
 private:
-	int numRoads;			//道路的数量
-	carList *carlist;		//车辆序列
+	int numRoads;		//道路的数量
+	carList *carlist;	//车辆序列
 	vector<vector<road>> *roadMap;	//边集合
 	vector<cross> *crossMap;		//路口集合
+	vector<pair<int, int>>* carTime;//车辆排序用
 
 	ifstream roadStream;	//道路文件流
 	ifstream crossStream;	//路口文件流
@@ -37,7 +38,11 @@ private:
 	bool initCross(const char* crossFilePath);		//初始化路口信息
 	bool initRoute(const char* answerFilePath);		//初始化路径信息
 
-	void binSort(carList *carlist);
+	void binSort(int range);	//对车辆按照出发时间进行排序
+	void setCarStatus(int theSecond);	//更新所有车辆的状态
+	int proBlockCars(int theSecond);	//处理所有车辆
+
+
 };
 
 map::map(const char* roadFilePath, const char* crossFilePath, const char* carFilePath, const char* answerFilePath)
@@ -196,7 +201,7 @@ bool map::initRoute(const char* answerFilePath)
 			getline(routeStream, infile);
 		else//否则按格式读取
 		{
-			cout << i << "\t";
+			//cout << i << "\t";
 			char str[10];
 			routeStream.getline(str, 10, ',');//读id
 			id = std::atoi(str);
@@ -224,21 +229,65 @@ bool map::initRoute(const char* answerFilePath)
 	routeStream.close();
 }
 
-void map::binSort(carList *carlist)
-{
+void map::binSort(int range)
+{	
+	//初始化
+	carTime = new vector<pair<int, int>>();
+	carTime->resize(carlist->size());
 	//对车辆按照出发时间进行桶排序
+	for (int index = 0; index < carlist->size(); index++)
+	{
+		carTime->at(index).first = index + carlist->firstID();
+		carTime->at(index).second = carlist->getCar(index+carlist->firstID()).planTime;
+	}
+	//计算总长度
+	int numberOfElements = carlist->size();
+	vector<pair<int, int>> one;
+	vector<vector<pair<int, int>>> car(range, one);
+
+	for (int i = 0; i < numberOfElements; i++)
+	{
+		pair<int, int> temp = carTime->back();
+		carTime->pop_back();
+		car[temp.second].push_back(temp);
+	}
+
+	for (int j = range - 1; j >= 0; j--)
+	{
+		while (!car[j].empty())
+		{
+			pair<int, int> temp = car[j].front();
+			vector<pair<int, int>>::iterator k = car[j].begin();
+			car[j].erase(k);
+			carTime->push_back(temp);
+		}
+	}
+}
+
+void map::setCarStatus(int theSecond)
+{
+	//设定所有车辆的状态
+}
+
+int map::proBlockCars(int theSecond)
+{
+	//处理车辆并返回信息
+	//死锁返回路口编号，成功调度返回0，其他原因返回负数
 
 }
 
 int map::simulate(int& totalTimes, int& finishTime)
 {
+	//调度之前要对车辆按照出发时间进行排序
 	//对车辆进行调度
 	bool deadLock = false;
 	bool finished = false;
-
+	int blockPort = 0;
 	totalTimes = 0;
-	while (!deadLock)
+	while (blockPort == 0)
 	{
+		setCarStatus(totalTimes);	//设置所有车辆的状态
+		blockPort = proBlockCars(totalTimes);	//处理所有状态为 WAITING 的车辆
 		//从carArray中找到所有的车辆，将马上要出发的车辆状态改为 WAITING
 		//按照路口遍历，处理车道上上所有正在运行的车辆
 		//如果有车辆要到达终点，状态改为 WAITING
@@ -283,12 +332,6 @@ int map::simulate(int& totalTimes, int& finishTime)
 
 		totalTimes++;
 	}
-
-
-
-
-
-
 
 
 	return deadLock;

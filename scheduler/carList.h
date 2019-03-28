@@ -21,6 +21,7 @@ public:
 
 	void resize(int size) { carsets->resize(size); }
 	int firstID() { return firstCarID; }
+	int size() { return carsets->size(); }
 
 private:
 	vector<car> *carsets;

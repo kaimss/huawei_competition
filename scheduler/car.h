@@ -10,12 +10,12 @@ using std::cin;
 using std::cout;
 using std::endl;
 
-enum carStatus { UNUSED, WAITING,  TERMINATE };
+enum carStatus { WAITING,  TERMINATE };
 //四种情况下的车状态
 
 struct car
 {
-	car() :carID(0), deparID(0), destID(0), maxCarSpeed(0), planTime(0), realTime(0), status(UNUSED)
+	car() :carID(0), deparID(0), destID(0), maxCarSpeed(0), planTime(0), realTime(0), status(WAITING)
 	{
 		routine = new vector<int>();
 	}

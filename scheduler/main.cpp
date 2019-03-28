@@ -22,6 +22,7 @@ int main(int argc, char** argv)
 	cout << "result file path: " << argv[4] << endl;
 
 	map *theMap = new map(argv[2], argv[3], argv[1], argv[4]);
+	theMap->sortCars(100);
 
 	return 0;
 }

@@ -267,13 +267,91 @@ void map::binSort(int range)
 void map::setCarStatus(int theSecond)
 {
 	//设定所有车辆的状态
+	//扫描所有车或者扫描所有路径，扫描车需要得到第一条路径，扫描路径需要得到第一条路径是本路径的车
+	//现在如何得到
+	//for (int i = 0; i < carlist->size(); i++)
+	//{
+	//	if (carlist->getCar(i).planTime == theSecond)
+	//	{
+	//		//carlist->getCar(i).status = WAITING;
+	//		int froad = carlist->getCar(i).routine->at(0);//将要出发的车辆的第一条路径编号
+	//		//获得这条路径
+	//		//按照条件扫描前方是否有车阻挡
+	//		//如果有车阻挡，状态设置为waiting
+	//		//如果没有车阻挡，状态设置为terminated
+
+
+
+	//	}
+	//}
+
+
+
+	//对每条道路上的车进行调度
+	for (int i = 1; i < roadMap->size(); i++)
+	{
+		for (int j = 1; j < roadMap->at(i).size(); j++)
+		{
+			road& trd = roadMap->at(i).at(j);
+			//对一条道路上每条车道上的所有车按顺序调度
+			/*
+			 1,1		1,2			1,3			...			1,length
+			 2,1		2,2			2,3			...			2,length
+								...
+			 channels,1 channels,2		   ...				channels,length
+
+			
+			*/
+			int *flag = new int[trd.channels + 1];//判断同一车道前方是否有车的数组flag[m]=n表明第m车道第n个位置有车
+			for (int index = 0; index <= trd.channels; index++)
+			{
+				flag[index] = 0;
+			}
+			for (int n = trd.length; n >= 1; n--)
+			{
+				for (int m = 1; m <= trd.channels; m++)
+				{
+					
+
+					int id = trd.roads[m][n];
+					if (id != 0)
+					{//如果当前道路当前车道上有车
+						car& tcar = carlist->getCar(id);
+						int cspeed = trd.maxRoadSpeed > tcar.maxCarSpeed ? tcar.maxCarSpeed : trd.maxRoadSpeed;
+						if (flag[m] > n&&flag[m] <= (n + cspeed))
+						{//前方阻挡
+							int foreid = trd.roads[m][flag[m]];
+							tcar.status = carlist->getCar(foreid).status;
+						}
+						else
+						{//前方没有阻挡
+							if (n + cspeed > trd.length)//可以过路口，置为等待状态
+								tcar.status = WAITING;
+							else//不可过路口，置为终止状态
+								tcar.status = TERMINATE;
+						}
+						flag[m] = n;//更新当前车道最前方车辆所在位置
+						
+
+
+					}
+					
+				}
+			}
+			delete[]flag;
+		}
+	}
+	//对每个路口将要出路口的车辆进行调度
+
+
+
 }
 
 int map::proBlockCars(int theSecond)
 {
 	//处理车辆并返回信息
 	//死锁返回路口编号，成功调度返回0，其他原因返回负数
-
+	return 0;
 }
 
 int map::simulate(int& totalTimes, int& finishTime)

@@ -19,4 +19,38 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="data\answer.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="data\car.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="data\cross.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+    <Text Include="data\road.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="road.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="cross.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="car.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="carList.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="dependencies.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="map.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>

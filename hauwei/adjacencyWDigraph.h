@@ -8,6 +8,7 @@
 #include <vector>
 #include <fstream>
 #include <cstdlib>
+#include "cross.h"
 #include "car.h"
 #include "carArray.h"
 #include "edge.h"
@@ -19,13 +20,16 @@ using namespace std;
 class adjacencyWDigraph
 {
 public:
-	adjacencyWDigraph();	//增加默认的构造函数，以便使用 initRoad() 进行初始化
-	adjacencyWDigraph(int numOfVertices = 3);
+	//adjacencyWDigraph();	//增加默认的构造函数，以便使用 initRoad() 进行初始化
+							//构造函数，输入四个文件名
+	adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath);
+	//adjacencyWDigraph(int numOfVertices = 3);
 	~adjacencyWDigraph();
 
 	
 	bool iniRoad(const char* fileName);	//初始化道路数据，参数为文件路径
 	bool iniRoad2(const char* fileName);//初始化道路数据之二，参数为文件路径
+	bool iniCross(const char* fileName);//初始化路口数据
 	void output();//输出矩阵
 	void allpairs(float **, int **);//任意两点之间的最短路径
 	void shortestPaths(float** c, int sourceVertex, float* distanceFromSource, int* predecessor);//两点间最短路径
@@ -33,38 +37,39 @@ public:
 	edge& getEdge(int i, int j);//返回从i到j的路径
 	//void floyid(char *, int **,int **);
 
-	void dynamicselect(char* path, carArray& carsets, vector<pair<int, int>>  &carTime);//通过pair中的排序更新边权重，
+	void dynamicselect(char* path, carArray& carsets);//通过pair中的排序更新边权重，
 																						//然后再求最短路径
 	void outputPathFile(char*, float **,int **,int,int,int,int,int&);//通过车的信息输出此车的路径至文件
 	void outputPathFile(char*, int **, int, int, int);
 
 	void output(char *, float **, int **, carArray &,int &);//输出所有车的路径至文件，调用了上上个函数
+
+	int getNumber();//获取路口数量
 private:
 	int numVertices;	//路口数量
 	int numEdges;		//道路数量
 	int **carTime;		//车辆到达的时间（最短路径算法）
 	ofstream out;
 	edge **edgesets;	//边集
+	vector<cross> *crossMap;		//路口集合
 
-	ofstream carstream;	
+	ofstream carstream;	//写
 	ifstream crossAndroad;//文件读取流
+	
+	vector<int> projectCar;
+	vector<int> projectRoad;
+	vector<int> projectCross;
+
+	int getCidp(int CrossId);//通过路口id获取索引，如果没有返回-1
+
 };
-
-adjacencyWDigraph::adjacencyWDigraph()
+adjacencyWDigraph::adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath)
 {
-	//默认的构造函数
-	numVertices = 0;
-	numEdges = 0;
-	carTime = NULL;
-	edgesets = NULL;
-}
+	iniCross(crossFilePath);
 
-adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
-{
-	if (numOfVertices < 2)
+	if (numVertices < 2)
 		throw UNKNOWN_PROBLEM;
 	//构造函数
-	numVertices = numOfVertices;
 	numEdges = 0;
 	edge *insert = NULL;
 	try {
@@ -81,7 +86,42 @@ adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
 		cout << "错误" << endl;
 		throw UNKNOWN_PROBLEM;
 	}
+
+
+	iniRoad2(roadFilePath);
 }
+//adjacencyWDigraph::adjacencyWDigraph()
+//{
+//	//默认的构造函数
+//	numVertices = 0;
+//	numEdges = 0;
+//	carTime = NULL;
+//	edgesets = NULL;
+//}
+//
+//adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
+//{
+//	if (numOfVertices < 2)
+//		throw UNKNOWN_PROBLEM;
+//	//构造函数
+//	numVertices = numOfVertices;
+//	numEdges = 0;
+//	edge *insert = NULL;
+//	try {
+//		edgesets = new edge*[numVertices + 1];
+//		carTime = new int*[numVertices];
+//		for (int i = 0; i <= numVertices; i++)
+//		{
+//			edgesets[i] = new edge[numVertices + 1];
+//			carTime[i] = new int[3];
+//		}
+//	}
+//	catch (bad_alloc)
+//	{
+//		cout << "错误" << endl;
+//		throw UNKNOWN_PROBLEM;
+//	}
+//}
 
 adjacencyWDigraph::~adjacencyWDigraph()
 {	//析构函数
@@ -155,6 +195,7 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 	}
 	int id, channel, start, dest, length, maxSpeed, single;
 	edge *insert;
+	//int i = 0;
 	while (!crossAndroad.eof())
 	{
 		one = crossAndroad.get();//读掉左括号或者'#'
@@ -187,7 +228,8 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 			
 			//cout << id << length << maxSpeed << channel << start << dest << single << endl;
 
-			insert = &edgesets[start][dest];
+			getCidp(dest);
+			insert = &edgesets[getCidp(start)][getCidp(dest)];///////根据实际出发结束点对应映射后的编号
 			insert->id = id;
 			insert->length = length;
 			insert->maxSpeed = maxSpeed;
@@ -201,7 +243,7 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 			}
 			if (single == 1)
 			{
-				insert = &edgesets[dest][start];
+				insert = &edgesets[getCidp(dest)][getCidp(start)];
 				insert->id = id;
 				insert->length = length;
 				insert->maxSpeed = maxSpeed;
@@ -213,6 +255,8 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 					insert->road.push_back(temp);
 				}
 			}
+			//cout << i++ << "\n";
+
 		}
 	}
 	crossAndroad.close();
@@ -227,7 +271,58 @@ void adjacencyWDigraph::output()
 		cout << endl;
 	}
 }
+bool adjacencyWDigraph::iniCross(const char* crossFilePath)
+{
+	crossMap = new vector<cross>();
+	//初始化函数，将读入的文件填写路口
+	string infile;
+	char str[10], one;
+	//pojectCross.resize
+	crossMap->resize(200);	//初始化
+	crossAndroad.open(crossFilePath, ios::in | ios::out);
+	if (!crossAndroad.is_open()) {
+		cout << "文件打开错误" << endl;
+		//throw UNKNOWN_METHOD;
+		return false;
+	}
+	int id, from, to, speed, planTime;
+	int i = 0;//行计数器，用于重新调整vector容器大小
+	while (!crossAndroad.eof())
+	{
+		int crossID = 0;
+		one = crossAndroad.get();//读掉左括号或者'#'
+		if (one == '#')//如果读到的是'#'则忽略这一行
+			getline(crossAndroad, infile);
+		else//否则按格式读取
+		{
+			crossAndroad.getline(str, 10, ',');
+			crossID = std::atoi(str);
+			crossMap->at(i + 1).id = crossID;
 
+
+			crossAndroad.getline(str, 10, ',');
+			crossMap->at(i + 1).adjaRoadID.push_back(std::atoi(str));
+
+			crossAndroad.getline(str, 10, ',');
+			crossMap->at(i + 1).adjaRoadID.push_back(std::atoi(str));
+
+			crossAndroad.getline(str, 10, ',');
+			crossMap->at(i + 1).adjaRoadID.push_back(std::atoi(str));
+
+			crossAndroad.getline(str, 10, ')');
+			crossMap->at(i + 1).adjaRoadID.push_back(std::atoi(str));
+
+			//crossMap->at(crossID).disp();	debug ;
+			one = crossAndroad.get();
+			i++;
+		}
+	}
+	cout << "all " << i << " crosses\n";
+	numVertices = i;
+	crossMap->resize(i + 1);//调整容器大小
+	crossAndroad.close();
+	return true;
+}
 //动态寻找所有顶点对之间的最短路径
 void adjacencyWDigraph::allpairs(float **c, int **kay)
 {
@@ -258,8 +353,11 @@ void adjacencyWDigraph::allpairs(float **c, int **kay)
 }
 
 //暂时的动态调度
-void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair<int, int>>  &carTime)
+void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 {
+
+	//int xx = 0;
+
 
 	float **c = new float*[numVertices +1];
 	for (int i = 0; i <= numVertices; i++)	
@@ -272,6 +370,7 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 		for (int j = 1; j <= numVertices; j++)
 		{
 			c[i][j] = edgesets[i][j].depend();
+			//cout << edgesets[i][j].length << endl;
 		}
 	}
 
@@ -284,10 +383,14 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 	
 	int pre = 0;
 	int source, destination;
-	for (int m = carTime.size() - 1; m >= 0; m--)
+	carstream.open(path, ios::out);
+	carstream.close();
+	carstream.open(path, ios::app);
+	//car tempcar;
+	for (int m = carsets.getNumber() - 1; m >= 0; m--)
 	{
-		id = carTime[m].first;
-		car &acar = carsets.getCar(id - 10000);
+		
+		car &acar = carsets.getCar(m);//
 		
 		source = acar.from;
 		destination = acar.to;
@@ -295,6 +398,7 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 		//按照一定规则调整边权
 		for (int i = 1; i <= numVertices; i++)
 		{
+			
 			for (int j = 1; j <= numVertices; j++)
 			{
 				if (edgesets[i][j].maxSpeed != 0)
@@ -309,9 +413,13 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 			}
 		}
 
+
+
+
 		shortestPaths(c, acar.from, distanceFromSource, predecessor);//通过c就算两点间最短距离
 
-		
+		//for (int i = 1; i <= numVertices; i++)
+		//	cout << i << "  " << predecessor[i] << "\n";
 
 		//恢复边权												
 		for (int i = 1; i <= numVertices; i++)
@@ -337,7 +445,7 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 
 
 		//通过前驱数组计算点序列
-		pre = destination;
+		pre = getCidp(destination);
 		while (pre != 0)
 		{
 			acar.dot.insert(acar.dot.begin(), pre);
@@ -350,6 +458,7 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 		//通过点序列获得边序列
 		for (int i = 0; i < acar.dot.size() - 1; i++)
 		{
+			
 			acar.path[i] = edgesets[acar.dot[i]][acar.dot[i + 1]].id;
 
 			//更新c[i][j]
@@ -358,7 +467,18 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 			c[acar.dot[i]][acar.dot[i + 1]] += 0.1;
 
 		}
-		
+		if (m > 8000 || m < 3000)
+			carstream << "(" << acar.id << "," << acar.planTime + acar.id % 260 << ",";
+		else if (m % 10 != 0)
+			carstream << "(" << acar.id << "," << acar.planTime + acar.id % 280 << ",";
+		else
+			carstream << "(" << acar.id << "," << acar.planTime << ",";
+		for (int j = 0; j < acar.path.size() - 1; j++)
+		{
+			carstream << acar.path[j] << ",";
+		}
+		carstream << acar.path[acar.path.size() - 1] << ")\n";
+		//cout << xx++ << "\n";
 
 	}
 
@@ -367,29 +487,29 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 
 
 
-	carstream.open(path, ios::out);
-	carstream.close();
-	carstream.open(path, ios::app);
-	car tempcar;
-	int tempsize = 0;
+	//carstream.open(path, ios::out);
+	//carstream.close();
+	//carstream.open(path, ios::app);
+	//car tempcar;
+	//int tempsize = 0;
 
-	for (int i = 0; i < carsets.getNumber(); i++)
-	{
-		tempcar = carsets.getCar(i);
-		tempsize = tempcar.path.size();
-		if (tempsize < 2)
-		{
-			continue;
-		}
+	//for (int i = 0; i < carsets.getNumber(); i++)
+	//{
+	//	tempcar = carsets.getCar(i);
+	//	tempsize = tempcar.path.size();
+	//	if (tempsize < 2)
+	//	{
+	//		continue;
+	//	}
 
-		carstream << "(" << carsets.getCar(i).id << "," << carsets.getCar(i).planTime << ",";
-		for (int j = 0; j < tempsize - 1; j++)
-		{
-			carstream << tempcar.path[j] << ",";
-		}
-		carstream << tempcar.path[tempsize - 1] << ")\n";
+	//	carstream << "(" << carsets.getCar(i).id << "," << carsets.getCar(i).planTime << ",";
+	//	for (int j = 0; j < tempsize - 1; j++)
+	//	{
+	//		carstream << tempcar.path[j] << ",";
+	//	}
+	//	carstream << tempcar.path[tempsize - 1] << ")\n";
 
-	}
+	//}
 
 }
 
@@ -401,21 +521,21 @@ void adjacencyWDigraph::shortestPaths(float** c, int sourceVertex, float* distan
 	vector<int> newReachableVertices;
 	for (int i = 1; i <= numVertices; i++)
 	{
-		distanceFromSource[i] = c[sourceVertex][i];
+		distanceFromSource[i] = c[getCidp(sourceVertex)][i];
 		if (distanceFromSource[i] + 1 > INF)
 			predecessor[i] = -1;
 		else
 		{
 
-			predecessor[i] = sourceVertex;
+			predecessor[i] = getCidp(sourceVertex);
 			newReachableVertices.insert(newReachableVertices.begin(), i);
 
 		}
 
 
 	}
-	distanceFromSource[sourceVertex] = 0;
-	predecessor[sourceVertex] = 0;  // source vertex has no predecessor
+	distanceFromSource[getCidp(sourceVertex)] = 0;
+	predecessor[getCidp(sourceVertex)] = 0;  // source vertex has no predecessor
 
 									// update distanceFromSource and predecessor
 	while (!newReachableVertices.empty())
@@ -625,7 +745,20 @@ void outputPath(float **c, int **kay, int i, int j, vector<int> &path, vector<in
 	}
 }
 
-
-
+int adjacencyWDigraph::getNumber()
+{
+	return numVertices;
+}
+int adjacencyWDigraph::getCidp(int CrossId)
+{
+	for (int i = 1; i <= numVertices; i++)
+	{
+		if (crossMap->at(i).id == CrossId)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
 
 #endif

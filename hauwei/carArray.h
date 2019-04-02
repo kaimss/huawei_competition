@@ -8,7 +8,7 @@
 #include "car.h"
 using namespace std;
 
-const int CONTAINER = 20000;
+const int CONTAINER = 100000;
 
 class carArray
 {
@@ -18,6 +18,9 @@ public:
 
 	car& getCar(int i);//返回第i辆车
 	int getNumber();//返回车辆数目
+	void pop_back();
+	car back();
+	void push_back(car tcar);
 
 private:
 	//vector<car> carsets(contianer);//需要给定一个初始化值以减少后面push_back的次数而减少时间
@@ -77,7 +80,7 @@ bool carArray::iniCar2(const char* fileName)
 			carstream.getline(str, 10, ',');
 			id = std::atoi(str);
 
-			carstream.getline(str, 5, ',');
+			carstream.getline(str, 10, ',');
 			from = std::atoi(str);
 
 			carstream.getline(str, 10, ',');
@@ -98,6 +101,8 @@ bool carArray::iniCar2(const char* fileName)
 			carsets[i].maxSpeed = speed;
 			carsets[i].planTime = planTime;
 
+			//cout << i << "  " << id << endl;
+
 			i++;
 		}
 	}
@@ -114,37 +119,48 @@ int carArray::getNumber()
 {
 	return carsets.size();
 }
-
-void binSort(vector<pair<int,int>>& carTime,int range)
+void carArray::pop_back()
 {
-	for (int index = 0; index < 10240; index++)
-	{
-		carTime[index].first = index + 10000;
-		carTime[index].second = cars.getCar(index).planTime;
-	}
+	carsets.pop_back();
+}
+car carArray::back()
+{
+	return carsets.back();
+}
+void carArray::push_back(car tcar)
+{
+	carsets.push_back(tcar);
 
-	int numberOfElements = carTime.size();
-	vector<pair<int, int>> one;
-	vector<vector<pair<int, int>>> car(range, one);
+}
+void binSort(carArray& carTime,int range)
+{
+	//for (int index = 0; index < 10240; index++)
+	//{
+	//	carTime[index].first = index + 10000;
+	//	carTime[index].second = cars.getCar(index).planTime;
+	//}
 
+	int numberOfElements = carTime.getNumber();
+	vector<car> one;
+	vector<vector<car>> cars(range, one);
 	for (int i = 0; i < numberOfElements; i++)
 	{
 		
 		//car[i](1);
-		pair<int, int> temp = carTime.back();
+		car temp = carTime.back();
 		carTime.pop_back();
 		//cout << "one " << i << "temp.second = " << temp.second << endl;
-		car[temp.second].push_back(temp);
+		cars[temp.planTime].push_back(temp);
 	}
 
 	for (int j = range-1; j >= 0; j--)
 	{
 		//cout << "two " << j << endl;
-		while (!car[j].empty()) 
+		while (!cars[j].empty()) 
 		{
-			pair<int, int> temp = car[j].front();
-			vector<pair<int,int>>::iterator k = car[j].begin();
-			car[j].erase(k);
+			car temp = cars[j].front();
+			vector<car>::iterator k = cars[j].begin();
+			cars[j].erase(k);
 			carTime.push_back(temp);
          }
 	}

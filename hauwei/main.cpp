@@ -30,10 +30,11 @@ int main(int argc, char** argv)
 	cout << "cross file path: " << argv[3] << endl;
 	cout << "result file path: " << argv[4] << endl;
 
-	adjacencyWDigraph graph(64);		///这个需要改动，因为未知结点个数
+	adjacencyWDigraph graph(argv[2], argv[3]);		///这个需要改动，因为未知结点个数
 	//graph.iniRoad("data1//road_process.txt");
+	//graph.iniCross(argv[3]);
+	//graph.iniRoad2(argv[2]);
 
-	graph.iniRoad2(argv[2]);
 	//未处理文件读取
 	//graph.output();
 
@@ -41,15 +42,15 @@ int main(int argc, char** argv)
 	//cars.iniCar("data1//car_process.txt");
 	cars.iniCar2(argv[1]);
 	//未处理文件读取
-	vector<pair<int ,int>> carTime(10240);	///这个需要改动，因为未知车辆数量
+	vector<pair<int ,int>> carTime(cars.getNumber());	///这个需要改动，因为未知车辆数量
 	float **a;
 	int **b;
-	a = new float*[65];		///这个需要改
-	b = new int*[65];		///这个需要改
-	for (int i = 0; i <= 64; i++)	///这个需要改
+	a = new float*[graph.getNumber() + 1];		///这个需要改
+	b = new int*[graph.getNumber() + 1];		///这个需要改
+	for (int i = 0; i <= graph.getNumber(); i++)	///这个需要改
 	{
-		a[i] = new float[65];		///这个需要改
-		b[i] = new int[65];			///这个需要改
+		a[i] = new float[graph.getNumber() + 1];		///这个需要改
+		b[i] = new int[graph.getNumber() + 1];			///这个需要改
 	}
 
 	graph.allpairs(a,b);
@@ -64,19 +65,17 @@ int main(int argc, char** argv)
 		carTime[index].second = cars.getCar(index).planTime + cars.getCar(index).second;
 		//cout << cars.getCar(index).id << " " << cars.getCar(index).planTime << " "<<cars.getCar(index).second << " " << cars.getCar(index).planTime + cars.getCar(index).second<<endl;
 	}*/
-	for (int index = 0; index < 10240; index++)
-	{
-		carTime[index].first = index + 10000;
-		carTime[index].second = cars.getCar(index).planTime;
-	}
-
-	binSort(carTime,70);//桶排倒序
-	int count=0;
+	//for (int index = 0; index < cars.getNumber(); index++)
+	//{
+	//	carTime[index].first = cars.getCar(index).id;
+	//	carTime[index].second = cars.getCar(index).planTime;
+	//}
+	//binSort(cars,70);//桶排倒序
 	//for (int index = 0; index < 10240; index++)
 	//	cout << carTime[index].first << " " << carTime[index].second<<endl;
 	//graph.output(argv[4], a, b, cars,count);
 	//for (int i = cars.getNumber()-1; i >= 0; i--)
 	//	graph.outputPathFile(argv[4], a, b, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to,count);
-	graph.dynamicselect(argv[4], cars, carTime);
+	graph.dynamicselect(argv[4],cars);
 	return 0;
 }

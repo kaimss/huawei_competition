@@ -30,7 +30,7 @@ int main(int argc, char** argv)
 	cout << "cross file path: " << argv[3] << endl;
 	cout << "result file path: " << argv[4] << endl;
 
-	adjacencyWDigraph graph(64);		///这个需要改动，因为未知结点个数
+	adjacencyWDigraph graph(143);		///这个需要改动，因为未知结点个数
 	//graph.iniRoad("data1//road_process.txt");
 
 	graph.iniRoad2(argv[2]);
@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 		carTime[index].second = cars.getCar(index).planTime;
 	}
 
-	binSort(carTime,70);//桶排倒序
+	binSort(carTime,70);//桶排倒序，第二个是要排的整数的范围
 	int count=0;
 	//for (int index = 0; index < 10240; index++)
 	//	cout << carTime[index].first << " " << carTime[index].second<<endl;

@@ -41,8 +41,6 @@ private:
 	void binSort(int range);	//对车辆按照出发时间进行排序
 	void setCarStatus(int theSecond);	//更新所有车辆的状态
 	int proBlockCars(int theSecond);	//处理所有车辆
-
-
 };
 
 map::map(const char* roadFilePath, const char* crossFilePath, const char* carFilePath, const char* answerFilePath)

@@ -22,7 +22,7 @@ class adjacencyWDigraph
 public:
 	//adjacencyWDigraph();	//增加默认的构造函数，以便使用 initRoad() 进行初始化
 							//构造函数，输入四个文件名
-	adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath);
+	adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath, const char* preSetFilePath);
 	//adjacencyWDigraph(int numOfVertices = 3);
 	~adjacencyWDigraph();
 
@@ -63,8 +63,11 @@ private:
 	int getCidp(int CrossId);//通过路口id获取索引，如果没有返回-1
 
 };
-adjacencyWDigraph::adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath)
+adjacencyWDigraph::adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath, const char* preSetFilePath)
 {
+	///------------------------------------
+	///这里要进行预置车辆的添加？可能会用在图中
+	///------------------------------------
 	iniCross(crossFilePath);
 
 	if (numVertices < 2)
@@ -86,8 +89,6 @@ adjacencyWDigraph::adjacencyWDigraph(const char* roadFilePath, const char* cross
 		cout << "错误" << endl;
 		throw UNKNOWN_PROBLEM;
 	}
-
-
 	iniRoad2(roadFilePath);
 }
 //adjacencyWDigraph::adjacencyWDigraph()
@@ -184,8 +185,7 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 }
 
 bool adjacencyWDigraph::iniRoad2(const char* fileName)
-{
-	//初始化函数，将读入的文件填写到图中
+{	//初始化函数，将读入的文件填写到图中
 	string infile;
 	char str[10], one;
 	crossAndroad.open(fileName, ios::in | ios::out);
@@ -299,7 +299,6 @@ bool adjacencyWDigraph::iniCross(const char* crossFilePath)
 			crossID = std::atoi(str);
 			crossMap->at(i + 1).id = crossID;
 
-
 			crossAndroad.getline(str, 10, ',');
 			crossMap->at(i + 1).adjaRoadID.push_back(std::atoi(str));
 
@@ -325,9 +324,7 @@ bool adjacencyWDigraph::iniCross(const char* crossFilePath)
 }
 //动态寻找所有顶点对之间的最短路径
 void adjacencyWDigraph::allpairs(float **c, int **kay)
-{
-
-	//初始化c[i][j]
+{	//初始化c[i][j]
 	for (int i = 1; i <= numVertices; i++)
 	{
 		for (int j = 1; j <= numVertices; j++)
@@ -344,8 +341,8 @@ void adjacencyWDigraph::allpairs(float **c, int **kay)
 	for (int k = 1; k <= numVertices; k++)
 		for (int i = 1; i <= numVertices; i++)
 			for (int j = 1; j <= numVertices; j++)
-        //找到c[i][j]的较小值
-				if (c[i][k] != INF && c[k][j] != INF && (c[i][j] ==INF || c[i][j] > c[i][k] + c[k][j]))
+			//找到c[i][j]的较小值
+				if (c[i][k] != INF && c[k][j] != INF && (c[i][j] == INF || c[i][j] > c[i][k] + c[k][j]))
 				{
 					c[i][j] = c[i][k] + c[k][j];
 					kay[i][j] = k;
@@ -355,10 +352,6 @@ void adjacencyWDigraph::allpairs(float **c, int **kay)
 //暂时的动态调度
 void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 {
-
-	//int xx = 0;
-
-
 	float **c = new float*[numVertices +1];
 	for (int i = 0; i <= numVertices; i++)	
 	{
@@ -374,10 +367,8 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 		}
 	}
 
-
 	float* distanceFromSource = new float[numVertices + 1];
 	int* predecessor = new int[numVertices + 1];
-
 
 	int id = 0;
 	
@@ -409,17 +400,10 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 					if (edgesets[i][j].maxSpeed != 0)
 						c[i][j] += (edgesets[i][j].road[0][0]) / (edgesets[i][j].length * edgesets[i][j].channel);
 				}
-				    
 			}
 		}
 
-
-
-
 		shortestPaths(c, acar.from, distanceFromSource, predecessor);//通过c就算两点间最短距离
-
-		//for (int i = 1; i <= numVertices; i++)
-		//	cout << i << "  " << predecessor[i] << "\n";
 
 		//恢复边权												
 		for (int i = 1; i <= numVertices; i++)
@@ -440,9 +424,6 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 		//	throw UNKNOWN_PROBLEM;
 		//	exit(1);
 		//}
-
-
-
 
 		//通过前驱数组计算点序列
 		pre = getCidp(destination);
@@ -479,13 +460,10 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 		}
 		carstream << acar.path[acar.path.size() - 1] << ")\n";
 		//cout << xx++ << "\n";
-
 	}
 
 	delete [] distanceFromSource;
 	delete [] predecessor;
-
-
 
 	//carstream.open(path, ios::out);
 	//carstream.close();
@@ -510,7 +488,6 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 	//	carstream << tempcar.path[tempsize - 1] << ")\n";
 
 	//}
-
 }
 
 //
@@ -526,13 +503,9 @@ void adjacencyWDigraph::shortestPaths(float** c, int sourceVertex, float* distan
 			predecessor[i] = -1;
 		else
 		{
-
 			predecessor[i] = getCidp(sourceVertex);
 			newReachableVertices.insert(newReachableVertices.begin(), i);
-
 		}
-
-
 	}
 	distanceFromSource[getCidp(sourceVertex)] = 0;
 	predecessor[getCidp(sourceVertex)] = 0;  // source vertex has no predecessor
@@ -676,9 +649,6 @@ void adjacencyWDigraph::output(char* path, float **c, int **kay, carArray &cars,
     }
 }*/
 
-
-
-
 //输出路径的实际代码
 void outputPath(int **kay, int i, int j)
 {
@@ -704,13 +674,6 @@ void outputPath(int **c, int **kay, int i, int j)
 		cout << endl;
 	}
 }
-
-
-
-
-
-
-
 
 //实际输出路径至path中，path中将存储边的序列
 void outputPath(int **kay, int i, int j, vector<int> &path, vector<int> &dot, adjacencyWDigraph &object)

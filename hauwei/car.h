@@ -18,6 +18,8 @@ struct car
 	vector<int> dot;//规划途径路口
 	vector<int> path;//规划路径
 
+	bool isPreSet;	//是否预置
+	bool isPriority;//是否优先
 
 	int croad;//当前所在道路
 	int cspeed;//当前行驶速度，等于min(道路限速，前方车辆的速度限制，自身最大速度)

@@ -10,7 +10,8 @@ class map
 public:
 	//构造函数，输入四个文件名
 	map(const char* roadFilePath, const char* crossFilePath, 
-		const char* carFilePath, const char* answerFilePath);
+		const char* carFilePath, const char* preSetFilePath, 
+		const char* answerFilePath);
 	//复制构造函数，待实现
 	map(const map& theMap);
 	//析构函数，待实现
@@ -43,9 +44,14 @@ private:
 	int proBlockCars(int theSecond);	//处理所有车辆
 };
 
-map::map(const char* roadFilePath, const char* crossFilePath, const char* carFilePath, const char* answerFilePath)
+map::map(const char* roadFilePath, const char* crossFilePath,
+	const char* carFilePath, const char* preSetFilePath, 
+	const char* answerFilePath)
 {
-	carlist = new carList(carFilePath);
+	///-----------------------------
+	///这里需要对读入的预置车辆进行处理
+	///-----------------------------
+	carlist = new carList(carFilePath, preSetFilePath);
 	initCross(crossFilePath);
 	initRoad(roadFilePath);
 	initRoute(answerFilePath);

@@ -15,13 +15,18 @@ enum carStatus { STANDSTILL, WAITING,  TERMINATE };
 
 struct car
 {
-	car() :carID(0), deparID(0), destID(0), maxCarSpeed(0), planTime(0), realTime(0), status(STANDSTILL)
+	car() :carID(0), deparID(0), destID(0),
+		maxCarSpeed(0), planTime(0), realTime(0),
+		status(STANDSTILL), isPreSet(false), isPriority(false)
 	{
 		routine = new vector<int>();
 	}
 
-	car(int theCarID, int theDeparID, int theDestID, int theMaxCarSpeed, int thePlanTime) :
-		carID(theCarID), deparID(theDeparID), destID(theDestID), maxCarSpeed(theMaxCarSpeed), planTime(thePlanTime)
+	car(int theCarID, int theDeparID, int theDestID,
+		int theMaxCarSpeed, int thePlanTime, bool ISPRESET, bool ISPRIORITY) :
+		carID(theCarID), deparID(theDeparID), destID(theDestID),
+		maxCarSpeed(theMaxCarSpeed), planTime(thePlanTime),
+		isPreSet(ISPRESET), isPriority(ISPRIORITY)
 	{
 		status = STANDSTILL;
 		realTime = thePlanTime;
@@ -49,6 +54,10 @@ struct car
 	int maxCarSpeed;
 	int planTime;
 	int realTime;
+
+	bool isPreSet;		//是否预置
+	bool isPriority;	//是否优先
+
 	carStatus status;
 };
 

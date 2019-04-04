@@ -8,7 +8,7 @@ class carList
 {
 public:
 	carList() { carsets = NULL; }
-	carList(const char* filePath);
+	carList(const char* filePath, const char* preSetFilePath);
 
 	car &getCar(const int id)
 	{
@@ -30,8 +30,11 @@ private:
 	bool isRead;
 };
 
-carList::carList(const char* filePath)
+carList::carList(const char* filePath, const char* preSetFilePath)
 {
+	///-----------
+	///加载预置车辆
+	///-----------
 	isRead = false;
 	carsets = new vector<car>();
 	//初始化函数，将读入的文件填写到车数组中

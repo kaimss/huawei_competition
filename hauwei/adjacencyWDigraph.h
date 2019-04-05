@@ -12,6 +12,7 @@
 #include "car.h"
 #include "carArray.h"
 #include "edge.h"
+#include "road.h"
 
 #define UNKNOWN_PROBLEM 1
 
@@ -22,7 +23,7 @@ class adjacencyWDigraph
 public:
 	//adjacencyWDigraph();	//增加默认的构造函数，以便使用 initRoad() 进行初始化
 							//构造函数，输入四个文件名
-	adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath, const char* preSetFilePath);
+	adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath);
 	//adjacencyWDigraph(int numOfVertices = 3);
 	~adjacencyWDigraph();
 
@@ -30,6 +31,8 @@ public:
 	bool iniRoad(const char* fileName);	//初始化道路数据，参数为文件路径
 	bool iniRoad2(const char* fileName);//初始化道路数据之二，参数为文件路径
 	bool iniCross(const char* fileName);//初始化路口数据
+	bool initPreset(const char* fileName, const char* fileName2);	//读取预置车辆
+
 	void output();//输出矩阵
 	void allpairs(float **, int **);//任意两点之间的最短路径
 	void shortestPaths(float** c, int sourceVertex, float* distanceFromSource, int* predecessor);//两点间最短路径
@@ -51,19 +54,21 @@ private:
 	int **carTime;		//车辆到达的时间（最短路径算法）
 	ofstream out;
 	edge **edgesets;	//边集
-	vector<cross> *crossMap;		//路口集合
 
-	ofstream carstream;	//写
-	ifstream crossAndroad;//文件读取流
+	vector<cross> *crossMap;		//路口集合
+	vector<road> *roads;			//道路集合
+
+	ofstream carstream;				//文件写入流（写入车的路径）
+	ifstream crossAndroad;			//文件读取流（读取路口及道路信息）
 	
 	vector<int> projectCar;
 	vector<int> projectRoad;
 	vector<int> projectCross;
 
-	int getCidp(int CrossId);//通过路口id获取索引，如果没有返回-1
+	int getCidp(int CrossId);		//通过路口id获取索引，如果没有返回-1
 
 };
-adjacencyWDigraph::adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath, const char* preSetFilePath)
+adjacencyWDigraph::adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath)
 {
 	///------------------------------------
 	///这里要进行预置车辆的添加？可能会用在图中
@@ -195,7 +200,9 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 	}
 	int id, channel, start, dest, length, maxSpeed, single;
 	edge *insert;
-	//int i = 0;
+	int index = 0;
+	roads = new vector<road>();
+	roads->resize(500);
 	while (!crossAndroad.eof())
 	{
 		one = crossAndroad.get();//读掉左括号或者'#'
@@ -228,14 +235,21 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 			
 			//cout << id << length << maxSpeed << channel << start << dest << single << endl;
 
-			getCidp(dest);
+			
 			insert = &edgesets[getCidp(start)][getCidp(dest)];///////根据实际出发结束点对应映射后的编号
 			insert->id = id;
 			insert->length = length;
 			insert->maxSpeed = maxSpeed;
 			insert->channel = channel;
-
 			numEdges++;
+
+
+			roads->at(index).id = id;
+			roads->at(index).from = start;
+			roads->at(index).to = dest;
+			index++;
+
+
 			vector<int> temp(length + 1, 0);
 			for (int i = 0; i <= channel; i++)
 			{
@@ -259,6 +273,7 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 
 		}
 	}
+	roads->resize(index);
 	crossAndroad.close();
 	return true;
 }
@@ -322,6 +337,78 @@ bool adjacencyWDigraph::iniCross(const char* crossFilePath)
 	crossAndroad.close();
 	return true;
 }
+bool adjacencyWDigraph::initPreset(const char* fileName, const char* fileName2)
+{
+	//初始化函数，将读入的预置车辆路径信息写入answer.txt文件
+	string infile;
+	char str[10], one;
+	crossAndroad.open(fileName, ios::in | ios::out);
+	if (!crossAndroad.is_open()) {
+		cout << "文件打开错误" << endl;
+		throw UNKNOWN_PROBLEM;
+	}
+	int id, scheduledTime;
+	int sum = 0;
+	int m = 0;
+
+	while (!crossAndroad.eof())
+	{
+		one = crossAndroad.get();//读掉左括号或者'#'
+		if (crossAndroad.eof())
+			return true;
+		if (one == '#')//如果读到的是'#'则忽略这一行
+			getline(crossAndroad, infile);
+		else//否则按格式读取
+		{
+			crossAndroad.getline(str, 10, ',');//读id
+			id = std::atoi(str);
+
+			crossAndroad.getline(str, 10, ',');//读scheduledTime
+			scheduledTime = std::atoi(str);
+
+			
+			cout << m++ << "\t";
+
+			while (1)
+			{
+				sum = 0;
+				one = crossAndroad.get();
+				while (one >= 48 && one <= 57)
+				{
+					sum = sum * 10 + (one - 48);
+					one = crossAndroad.get();
+
+				}
+				//一些加权措施
+				for (int i = 0; i < roads->size(); i++)
+				{
+					if (sum == roads->at(i).id)
+					{
+						edgesets[getCidp(roads->at(i).from)][getCidp(roads->at(i).to)].road[0][0]++;
+						break;
+					}
+				}
+	
+				if (one == ')')
+					break;
+			}
+			one = crossAndroad.get();//读掉换行符
+			//m++;
+		}
+	}
+	crossAndroad.close();
+
+	//重新打开并且写入answer.txt
+	crossAndroad.open(fileName, ios::in | ios::out);
+	carstream.open(fileName2, ios::in | ios::out);
+	while (!crossAndroad.eof())
+	{
+		getline(crossAndroad, infile);
+		carstream << infile << "\n";
+	}
+	crossAndroad.close();
+	carstream.close();
+}
 //动态寻找所有顶点对之间的最短路径
 void adjacencyWDigraph::allpairs(float **c, int **kay)
 {	//初始化c[i][j]
@@ -363,6 +450,11 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 		for (int j = 1; j <= numVertices; j++)
 		{
 			c[i][j] = edgesets[i][j].depend();
+			if (edgesets[i][j].length != INF)
+			{
+				c[i][j] += edgesets[i][j].road[0][0];
+			}
+			
 			//cout << edgesets[i][j].length << endl;
 		}
 	}
@@ -374,8 +466,8 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 	
 	int pre = 0;
 	int source, destination;
-	carstream.open(path, ios::out);
-	carstream.close();
+	//carstream.open(path, ios::out);
+	//carstream.close();
 	carstream.open(path, ios::app);
 	//car tempcar;
 	for (int m = carsets.getNumber() - 1; m >= 0; m--)
@@ -403,6 +495,7 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 			}
 		}
 
+		//cout << "acar"<<acar.from << "\t";
 		shortestPaths(c, acar.from, distanceFromSource, predecessor);//通过c就算两点间最短距离
 
 		//恢复边权												

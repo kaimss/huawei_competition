@@ -69,6 +69,7 @@ bool carArray::iniCar2(const char* fileName)
 		return false;
 	}
 	int id, from, to, speed, planTime;
+	bool isPriority, isPreSet;
 	int i = 0;//行计数器，用于重新调整vector容器大小
 	while (!carstream.eof())
 	{
@@ -89,21 +90,34 @@ bool carArray::iniCar2(const char* fileName)
 			carstream.getline(str, 10, ',');
 			speed = std::atoi(str);
 
+			carstream.getline(str, 10, ',');
+			planTime = std::atoi(str);			
+
+			carstream.getline(str, 10, ',');
+			isPriority = std::atoi(str) == 1 ? true : false;
+
 			carstream.getline(str, 10, ')');
-			planTime = std::atoi(str);
+			isPreSet = std::atoi(str) == 1 ? true : false;
 
 			one = carstream.get();//读掉换行符
 
 			//赋值
-			carsets[i].id = id;//id从0开始
-			carsets[i].from = from;
-			carsets[i].to = to;
-			carsets[i].maxSpeed = speed;
-			carsets[i].planTime = planTime;
+			if (!isPreSet)
+			{//如果是非预置车辆，则读取并加入carsets
+				carsets[i].id = id;
+				carsets[i].from = from;
+				carsets[i].to = to;
+				carsets[i].maxSpeed = speed;
+				carsets[i].planTime = planTime;
+				carsets[i].isPriority = isPriority;
+				carsets[i].isPreSet = isPreSet;
+				i++;
+			}
+
 
 			//cout << i << "  " << id << endl;
 
-			i++;
+			
 		}
 	}
 	carsets.resize(i);//调整容器大小

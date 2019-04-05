@@ -35,7 +35,13 @@ int main(int argc, char** argv)
 	cout << "preSet car file path: " << argv[4] << endl;
 	cout << "result file path: " << argv[5] << endl;
 
-	adjacencyWDigraph graph(argv[2], argv[3], argv[4]);		///这个需要改动，因为未知结点个数
+	ofstream clean;//清除上一次answer的数据
+	clean.open(argv[5], ios::out);
+	clean.close();
+
+	adjacencyWDigraph graph(argv[2], argv[3]);		///这个需要改动，因为未知结点个数
+
+	graph.initPreset(argv[4], argv[5]);
 	//graph.iniRoad("data1//road_process.txt");
 	//graph.iniCross(argv[3]);
 	//graph.iniRoad2(argv[2]);

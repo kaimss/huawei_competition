@@ -24,7 +24,7 @@ struct road
 	int maxRoadSpeed;	//最大限速
 	int channels;		//车道数量
 
-	vector<vector<int>> roads;
+	vector<vector<int>> roads;//道路数组
 };
 
 #endif

@@ -38,6 +38,9 @@
     <ClInclude Include="cross.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="road.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Text Include="data1\car_process.txt">

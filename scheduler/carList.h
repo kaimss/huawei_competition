@@ -55,6 +55,7 @@ carList::carList(const char* filePath, const char* preSetFilePath)
 			getline(carstream, infile);
 		else//否则按格式读取
 		{
+			//车辆 ID
 			carstream.getline(str, 10, ',');
 			carsets->at(i).carID = std::atoi(str);
 
@@ -63,15 +64,19 @@ carList::carList(const char* filePath, const char* preSetFilePath)
 				isRead = true;
 			}
 
+			//出发路口 ID
 			carstream.getline(str, 10, ',');
 			carsets->at(i).deparID = std::atoi(str);
 
+			//目的地路口 ID
 			carstream.getline(str, 10, ',');
 			carsets->at(i).destID = std::atoi(str);
 
+			//最大限速
 			carstream.getline(str, 10, ',');
 			carsets->at(i).maxCarSpeed= std::atoi(str);
 
+			//计划出发时间
 			carstream.getline(str, 10, ')');
 			carsets->at(i).planTime = std::atoi(str);
 			//carsets->at(i).disp();	debug 用

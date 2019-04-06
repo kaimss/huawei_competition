@@ -38,6 +38,8 @@ private:
 	bool initRoad(const char* roadFilePath);		//初始化道路信息
 	bool initCross(const char* crossFilePath);		//初始化路口信息
 	bool initRoute(const char* answerFilePath);		//初始化路径信息
+	
+	bool initPreset(const char* preSetFilePath);	//初始化预置车辆信息
 
 	void binSort(int range);	//对车辆按照出发时间进行排序
 	void setCarStatus(int theSecond);	//更新所有车辆的状态
@@ -220,7 +222,6 @@ bool map::initRoute(const char* answerFilePath)
 				{
 					sum = sum * 10 + (one - 48);
 					one = routeStream.get();
-
 				}
 				carlist->getCar(id).routine->push_back(sum);
 				if (one == ')')
@@ -283,14 +284,8 @@ void map::setCarStatus(int theSecond)
 	//		//按照条件扫描前方是否有车阻挡
 	//		//如果有车阻挡，状态设置为waiting
 	//		//如果没有车阻挡，状态设置为terminated
-
-
-
 	//	}
 	//}
-
-
-
 	//对每条道路上的车进行调度
 	for (int i = 1; i < roadMap->size(); i++)
 	{
@@ -303,8 +298,6 @@ void map::setCarStatus(int theSecond)
 			 2,1		2,2			2,3			...			2,length
 								...
 			 channels,1 channels,2		   ...				channels,length
-
-			
 			*/
 			int *flag = new int[trd.channels + 1];//判断同一车道前方是否有车的数组flag[m]=n表明第m车道第n个位置有车
 			for (int index = 0; index <= trd.channels; index++)
@@ -315,8 +308,6 @@ void map::setCarStatus(int theSecond)
 			{
 				for (int m = 1; m <= trd.channels; m++)
 				{
-					
-
 					int id = trd.roads[m][n];
 					if (id != 0)
 					{//如果当前道路当前车道上有车
@@ -335,11 +326,7 @@ void map::setCarStatus(int theSecond)
 								tcar.status = TERMINATE;
 						}
 						flag[m] = n;//更新当前车道最前方车辆所在位置
-						
-
-
 					}
-					
 				}
 			}
 			delete[]flag;

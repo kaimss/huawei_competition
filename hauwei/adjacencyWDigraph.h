@@ -22,7 +22,7 @@ class adjacencyWDigraph
 public:
 	//adjacencyWDigraph();	//增加默认的构造函数，以便使用 initRoad() 进行初始化
 							//构造函数，输入四个文件名
-	adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath, const char* preSetFilePath);
+	adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath);
 	//adjacencyWDigraph(int numOfVertices = 3);
 	~adjacencyWDigraph();
 
@@ -30,6 +30,9 @@ public:
 	bool iniRoad(const char* fileName);	//初始化道路数据，参数为文件路径
 	bool iniRoad2(const char* fileName);//初始化道路数据之二，参数为文件路径
 	bool iniCross(const char* fileName);//初始化路口数据
+
+	bool iniPreSet(const char* fileName);	//加载预置车辆文件，把加载的文件路径写入车辆结构体？？？
+
 	void output();//输出矩阵
 	void allpairs(float **, int **);//任意两点之间的最短路径
 	void shortestPaths(float** c, int sourceVertex, float* distanceFromSource, int* predecessor);//两点间最短路径
@@ -63,11 +66,8 @@ private:
 	int getCidp(int CrossId);//通过路口id获取索引，如果没有返回-1
 
 };
-adjacencyWDigraph::adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath, const char* preSetFilePath)
+adjacencyWDigraph::adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath)
 {
-	///------------------------------------
-	///这里要进行预置车辆的添加？可能会用在图中
-	///------------------------------------
 	iniCross(crossFilePath);
 
 	if (numVertices < 2)

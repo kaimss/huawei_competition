@@ -49,6 +49,9 @@ carList::carList(const char* filePath)
 	string infile;
 	char str[10], one;
 	carsets->resize(70000);//初始化有container辆车，后面可以修改大小
+	int range = 2000;
+	vector<car> *carTime1 = new vector<car>[range];
+	vector<car> carTime2(0);
 	carstream.open(filePath, ios::in | ios::out);
 	if (!carstream.is_open()) {
 		cout << "文件打开错误" << endl;
@@ -95,10 +98,19 @@ carList::carList(const char* filePath)
 			carsets->at(i).isPreSet = preset;
 			
 			MAPPING->insert(pair<int, int>(id, i));
+			//按照出发时间放入到对应的箱子里
+			carTime1[carsets->at(i).planTime].push_back(carsets->at(i));
 
 			//carsets->at(i).disp();	debug 用
 			i++;
 			one = carstream.get();
+		}
+	}
+	for (int i = 0; i < range; i++)
+	{
+		for (int j = 0; j < carTime1[i].size(); j++)
+		{
+			carTime2.push_back(carTime1[i][j]);
 		}
 	}
 	carsets->resize(i);//调整容器大小

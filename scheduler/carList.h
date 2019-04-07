@@ -48,10 +48,12 @@ carList::carList(const char* filePath)
 	//初始化函数，将读入的文件填写到车数组中
 	string infile;
 	char str[10], one;
-	carsets->resize(70000);//初始化有container辆车，后面可以修改大小
-	int range = 2000;
-	vector<car> *carTime1 = new vector<car>[range];
-	vector<car> carTime2(0);
+	carsets->resize(70000);//初始化有70000辆车，后面可以修改大小
+
+	//int range = 2000;
+	//vector<car> *carTime1 = new vector<car>[range];
+	//vector<car> carTime2(0);
+
 	carstream.open(filePath, ios::in | ios::out);
 	if (!carstream.is_open()) {
 		cout << "文件打开错误" << endl;
@@ -62,8 +64,8 @@ carList::carList(const char* filePath)
 	int i = 0;//行计数器，用于重新调整vector容器大小
 	while (!carstream.eof())
 	{
-		one = carstream.get();//读掉左括号或者'#'
-		if (one == '#')//如果读到的是'#'则忽略这一行
+		one = carstream.get();	//读掉左括号或者'#'
+		if (one == '#')			//如果读到的是'#'忽略这一行
 			getline(carstream, infile);
 		else//否则按格式读取
 		{	//车辆 ID
@@ -99,20 +101,18 @@ carList::carList(const char* filePath)
 			
 			MAPPING->insert(pair<int, int>(id, i));
 			//按照出发时间放入到对应的箱子里
-			carTime1[carsets->at(i).planTime].push_back(carsets->at(i));
+			//carTime1[carsets->at(i).planTime].push_back(carsets->at(i));
 
 			//carsets->at(i).disp();	debug 用
 			i++;
 			one = carstream.get();
 		}
 	}
+	/*
 	for (int i = 0; i < range; i++)
-	{
 		for (int j = 0; j < carTime1[i].size(); j++)
-		{
 			carTime2.push_back(carTime1[i][j]);
-		}
-	}
+	*/
 	carsets->resize(i);//调整容器大小
 	carstream.close();
 }

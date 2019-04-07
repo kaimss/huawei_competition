@@ -9,7 +9,7 @@
 class theMap
 {
 public:
-	//构造函数，输入五个文件名
+	//构造函数，输入四个文件名
 	theMap(const char* roadFilePath, const char* crossFilePath, 
 		const char* carFilePath, const char* answerFilePath);
 	//复制构造函数，待实现
@@ -23,7 +23,6 @@ public:
 	//失败返回死锁路口并报以死锁或者其他错误
 	//死锁返回路口编号，其他错误返回负值
 	int simulate(int& totalTimes, int& finishTime);
-
 	void dispCars();
 
 private:
@@ -44,8 +43,8 @@ private:
 	void setCarStatus(int theSecond);	//更新所有车辆的状态
 	int proBlockCars(int theSecond);	//处理所有车辆
 
-	map<int, int> *roadMAPPINGfirst;	//道路 id 到到达地点 dest 的映射（单向）
-	map<int, int> *roadMAPPINGsecond;	//道路 id 到到达地点 dest 的映射（反向）
+	//<道路 id, pair< 起点（下标）,终点（下标）>
+	map<int, pair<int,int> > *roadMAPPING;	//道路 id 到起点和终点的映射
 };
 
 theMap::theMap(const char* roadFilePath, const char* crossFilePath,
@@ -55,13 +54,12 @@ theMap::theMap(const char* roadFilePath, const char* crossFilePath,
 	initRoad(roadFilePath);
 	carlist = new carList(carFilePath);
 	initRoute(answerFilePath);
-	dispCars();
+	//dispCars();	debug 用
 }
 
 bool theMap::initRoad(const char* roadFilePath)
 {
-	roadMAPPINGfirst = new map<int, int>();
-	roadMAPPINGsecond = new map<int, int>();
+	roadMAPPING = new map<int, pair<int, int> >();
 
 	const int roads = crosslist->size();
 	if (roads == 0)
@@ -119,7 +117,7 @@ bool theMap::initRoad(const char* roadFilePath)
 			roadMap->at(posI).at(posJ).channels = channel;
 			//roadMap->at(start).at(dest).disp();	debug 用
 
-			roadMAPPINGfirst->insert(pair<int, int>(id, dest));
+			roadMAPPING->insert(pair<int, pair<int, int> >(id, pair<int, int>(start, dest)));
 
 			numRoads++;
 
@@ -134,7 +132,6 @@ bool theMap::initRoad(const char* roadFilePath)
 				roadMap->at(posJ).at(posI).maxRoadSpeed = maxSpeed;
 				roadMap->at(posJ).at(posI).channels = channel;
 				//roadMap->at(dest).at(start).disp();	debug 用
-				roadMAPPINGsecond->insert(pair<int, int>(id, start));
 
 				numRoads++;
 				vector<int> temp(length + 1, 0);
@@ -200,7 +197,7 @@ bool theMap::initRoute(const char* answerFilePath)
 			//获得车辆的起始路口
 			initCross = iter->deparID;
 			nextPoint = crosslist->nextPoint(
-				initCross, initRoad, roadMAPPINGfirst, roadMAPPINGsecond, roadMap);
+				initCross, initRoad, roadMAPPING, roadMap);
 			if (nextPoint == -1)
 				throw 100;	//说明没有找到路口
 			posI = crosslist->getIndex(initCross);
@@ -339,8 +336,10 @@ int theMap::simulate(int& totalTimes, int& finishTime)
 	totalTimes = 0;
 	while (blockPort == 0)
 	{
+		totalTimes++;
 		setCarStatus(totalTimes);	//设置所有车辆的状态
 		blockPort = proBlockCars(totalTimes);	//处理所有状态为 WAITING 的车辆
+		//createCarSequence()	//生成优先级队列？
 		//从carArray中找到所有的车辆，将马上要出发的车辆状态改为 WAITING
 		//按照路口遍历，处理车道上上所有正在运行的车辆
 		//如果有车辆要到达终点，状态改为 WAITING
@@ -403,7 +402,7 @@ void theMap::dispCars()
 			temp = iter->waitingGeneral.size() + iter->waitingPriority.size();
 			if (temp == 0)
 				continue;
-			cout << temp << "  ";
+			cout << i << " " << j << " " << temp << "  ";
 			sum += temp;
 		}
 		cout << endl;

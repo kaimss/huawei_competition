@@ -12,7 +12,7 @@ using std::endl;
 
 struct cross
 {
-	cross() :id(0) {};
+	cross() :id(0) {}
 
 	void disp()
 	{
@@ -23,6 +23,7 @@ struct cross
 	}
 
 	int id;
+
 	vector<int> adjaRoadID;
 };
 

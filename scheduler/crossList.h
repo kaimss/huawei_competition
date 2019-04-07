@@ -26,9 +26,8 @@ public:
 	//获得总路口数目
 	const int& size() { return crossets->size(); }
 
-	const int& nextPoint(const int& originPoint, const int& roadID, 
-		map<int, int>* MAPPINGfirst, map<int, int>* MAPPINGsecond,
-		vector<vector<road> >  *roadMap);
+	const int& nextPoint(const int& originPoint, const int& roadID,
+		map<int, pair<int, int> >* MAPPING, vector<vector<road> >  *roadMap);
 
 private:
 	vector<cross> *crossets;			//路口集合
@@ -171,25 +170,33 @@ void crossList::getRoadsByIndex(const int& index, int* roadsIDs)
 }
 
 const int& crossList::nextPoint(const int& originPoint, const int& roadID, 
-	map<int,int>* MAPPINGfirst, map<int,int>* MAPPINGsecond, vector<vector<road> >  *roadMap)
+	map<int, pair<int,int> >* MAPPING, vector<vector<road> >  *roadMap)
 {
 	///---------------------------------------------------------------
 	///遍历从 originPoint 出发的四条路径，从而得到指定道路 ID 的终点
 	/// originPoint 为起始路口的编号
+	/// 返回值为路口编号
 	cross theCross = getCross(originPoint);	//获得路口
 	//找到顶点，遍历四条路
-	int dest = 0;
+	map<int, pair<int, int> >::iterator iter = MAPPING->begin();
 	DIRECTION dir[4] = { UP,RIGHT,DOWN,LEFT };
-	map<int, int>::iterator iterFirst = MAPPINGfirst->begin();
-	map<int, int>::iterator iterSecond = MAPPINGsecond->begin();
+	int ROAD = 0;
+	int src = 0, dest = 0;
 	for (int i = 0; i < 4; i++)
 	{
-		iterFirst = MAPPINGfirst->find(roadID);
-		if (iterFirst != MAPPINGfirst->end())
-			return (*iterFirst).second;
-		iterSecond = MAPPINGsecond->find(roadID);
-		if (iterSecond != MAPPINGfirst->end())
-			return (*iterSecond).second;
+		ROAD = theCross.adjaRoadID[dir[i]];
+		if (ROAD == -1)
+			continue;
+		iter = MAPPING->find(ROAD);
+		if (iter != MAPPING->end())
+		{
+			src = (*iter).second.first;
+			dest = (*iter).second.second;
+			if (src == originPoint)
+				return dest;
+			else
+				return src;
+		}
 	}
 	return -1;
 }

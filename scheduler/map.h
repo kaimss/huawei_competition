@@ -1,21 +1,21 @@
 #pragma once
-#ifndef _MAP_
-#define _MAP_
+#ifndef _theMap_
+#define _theMap_
 
 #include "dependencies.h"
 #include "carList.h"
+#include "crossList.h"
 
-class map
+class theMap
 {
 public:
-	//构造函数，输入四个文件名
-	map(const char* roadFilePath, const char* crossFilePath, 
-		const char* carFilePath, const char* preSetFilePath, 
-		const char* answerFilePath);
+	//构造函数，输入五个文件名
+	theMap(const char* roadFilePath, const char* crossFilePath, 
+		const char* carFilePath, const char* answerFilePath);
 	//复制构造函数，待实现
-	map(const map& theMap);
+	theMap(const theMap& thetheMap);
 	//析构函数，待实现
-	~map();
+	~theMap();
 
 	//将车辆按照出发顺序进行排序，从前向后采用桶排序
 	void sortCars(int range) { binSort(range); }
@@ -24,47 +24,49 @@ public:
 	//死锁返回路口编号，其他错误返回负值
 	int simulate(int& totalTimes, int& finishTime);
 
+	void dispCars();
+
 private:
-	int numRoads;		//道路的数量
-	carList *carlist;	//车辆序列
-	vector<vector<road>> *roadMap;	//边集合
-	vector<cross> *crossMap;		//路口集合
-	vector<pair<int, int>>* carTime;//车辆排序用
+	int numRoads;			//道路的数量
+	carList *carlist;		//车辆序列
+	crossList *crosslist;	//路口序列
+
+	vector<vector<road>> *roadMap;		//边集合
+	vector<pair<int, int>>* carTime;	//车辆排序用
 
 	ifstream roadStream;	//道路文件流
-	ifstream crossStream;	//路口文件流
 	ifstream routeStream;	//路线文件流
 
 	bool initRoad(const char* roadFilePath);		//初始化道路信息
-	bool initCross(const char* crossFilePath);		//初始化路口信息
 	bool initRoute(const char* answerFilePath);		//初始化路径信息
-	
-	bool initPreset(const char* preSetFilePath);	//初始化预置车辆信息
 
-	void binSort(int range);	//对车辆按照出发时间进行排序
+	void binSort(int range);			//对车辆按照出发时间进行排序
 	void setCarStatus(int theSecond);	//更新所有车辆的状态
 	int proBlockCars(int theSecond);	//处理所有车辆
+
+	map<int, int> *roadMAPPINGfirst;	//道路 id 到到达地点 dest 的映射（单向）
+	map<int, int> *roadMAPPINGsecond;	//道路 id 到到达地点 dest 的映射（反向）
 };
 
-map::map(const char* roadFilePath, const char* crossFilePath,
-	const char* carFilePath, const char* preSetFilePath, 
-	const char* answerFilePath)
+theMap::theMap(const char* roadFilePath, const char* crossFilePath,
+	const char* carFilePath, const char* answerFilePath)
 {
-	///-----------------------------
-	///这里需要对读入的预置车辆进行处理
-	///-----------------------------
-	carlist = new carList(carFilePath, preSetFilePath);
-	initCross(crossFilePath);
+	crosslist = new crossList(crossFilePath);
 	initRoad(roadFilePath);
+	carlist = new carList(carFilePath);
 	initRoute(answerFilePath);
+	dispCars();
 }
 
-bool map::initRoad(const char* roadFilePath)
+bool theMap::initRoad(const char* roadFilePath)
 {
-	const int roads = crossMap->size();
+	roadMAPPINGfirst = new map<int, int>();
+	roadMAPPINGsecond = new map<int, int>();
+
+	const int roads = crosslist->size();
 	if (roads == 0)
 	{
-		cout << "请先加载道路文件!" << endl;
+		cout << "请先加载路口文件!" << endl;
 		return false;
 	}
 	roadMap = new vector<vector<road>>(roads + 1, vector<road>(roads + 1));
@@ -78,6 +80,7 @@ bool map::initRoad(const char* roadFilePath)
 	char str[10], one;
 	int id, channel, start, dest, length, maxSpeed, single;
 	road *insert;
+	int posI = 0, posJ = 0;
 	while (!roadStream.eof())
 	{
 		one = roadStream.get();//读掉左括号或者'#'
@@ -99,37 +102,44 @@ bool map::initRoad(const char* roadFilePath)
 
 			roadStream.getline(str, 10, ',');
 			start = std::atoi(str);
+			posI = crosslist->getIndex(start) + 1;
 
 			roadStream.getline(str, 10, ',');
 			dest = std::atoi(str);
+			posJ = crosslist->getIndex(dest) + 1;
 
 			roadStream.getline(str, 10, ')');
 			single = std::atoi(str);
 
 			one = roadStream.get();//读掉换行符
 
-			roadMap->at(start).at(dest).id = id;
-			roadMap->at(start).at(dest).length = length;
-			roadMap->at(start).at(dest).maxRoadSpeed = maxSpeed;
-			roadMap->at(start).at(dest).channels = channel;
+			roadMap->at(posI).at(posJ).id = id;
+			roadMap->at(posI).at(posJ).length = length;
+			roadMap->at(posI).at(posJ).maxRoadSpeed = maxSpeed;
+			roadMap->at(posI).at(posJ).channels = channel;
 			//roadMap->at(start).at(dest).disp();	debug 用
+
+			roadMAPPINGfirst->insert(pair<int, int>(id, dest));
+
 			numRoads++;
 
 			vector<int> temp(length + 1, 0);
 			for (int i = 0; i <= channel; i++)
-				roadMap->at(start).at(dest).roads.push_back(temp);
+				roadMap->at(posI).at(posJ).roads.push_back(temp);
 
 			if (single == 1)
 			{
-				roadMap->at(dest).at(start).id = id;
-				roadMap->at(dest).at(start).length = length;
-				roadMap->at(dest).at(start).maxRoadSpeed = maxSpeed;
-				roadMap->at(dest).at(start).channels = channel;
+				roadMap->at(posJ).at(posI).id = id;
+				roadMap->at(posJ).at(posI).length = length;
+				roadMap->at(posJ).at(posI).maxRoadSpeed = maxSpeed;
+				roadMap->at(posJ).at(posI).channels = channel;
 				//roadMap->at(dest).at(start).disp();	debug 用
+				roadMAPPINGsecond->insert(pair<int, int>(id, start));
+
 				numRoads++;
 				vector<int> temp(length + 1, 0);
 				for (int i = 0; i <= channel; i++)
-					roadMap->at(dest).at(start).roads.push_back(temp);
+					roadMap->at(posJ).at(posI).roads.push_back(temp);
 			}
 		}
 	}
@@ -137,54 +147,7 @@ bool map::initRoad(const char* roadFilePath)
 	return true;
 }
 
-bool map::initCross(const char* crossFilePath)
-{
-	crossMap = new vector<cross>();
-	//初始化函数，将读入的文件填写路口
-	string infile;
-	char str[10], one;
-	crossMap->resize(100);	//初始化
-	crossStream.open(crossFilePath, ios::in | ios::out);
-	if (!crossStream.is_open()) {
-		cout << "文件打开错误" << endl;
-		throw UNKNOWN_METHOD;
-	}
-	int id, from, to, speed, planTime;
-	int i = 0;//行计数器，用于重新调整vector容器大小
-	while (!crossStream.eof())
-	{
-		int crossID = 0;
-		one = crossStream.get();//读掉左括号或者'#'
-		if (one == '#')//如果读到的是'#'则忽略这一行
-			getline(crossStream, infile);
-		else//否则按格式读取
-		{
-			crossStream.getline(str, 10, ',');
-			crossID = std::atoi(str);
-			crossMap->at(crossID).id = crossID;
-
-			crossStream.getline(str, 10, ',');
-			crossMap->at(crossID).adjaRoadID.push_back(std::atoi(str));
-
-			crossStream.getline(str, 10, ',');
-			crossMap->at(crossID).adjaRoadID.push_back(std::atoi(str));
-
-			crossStream.getline(str, 10, ',');
-			crossMap->at(crossID).adjaRoadID.push_back(std::atoi(str));
-
-			crossStream.getline(str, 10, ')');
-			crossMap->at(crossID).adjaRoadID.push_back(std::atoi(str));
-
-			//crossMap->at(crossID).disp();	debug 用
-			i++;
-			one = crossStream.get();
-		}
-	}
-	crossMap->resize(i);//调整容器大小
-	crossStream.close();
-}
-
-bool map::initRoute(const char* answerFilePath)
+bool theMap::initRoute(const char* answerFilePath)
 {
 	//初始化函数，将读入的文件填写路口
 	string infile;
@@ -197,7 +160,11 @@ bool map::initRoute(const char* answerFilePath)
 	int id, scheduledTime, passNode;
 	int sum = 0;
 	int i = 0;//行计数器，用于重新调整vector容器大小
-
+	int posI = 0, posJ = 0;
+	car* iter;
+	int initRoad = 0;
+	int nextPoint = 0;
+	int initCross = 0;
 	while (!routeStream.eof())
 	{
 		one = routeStream.get();//读掉左括号或者'#'
@@ -207,12 +174,13 @@ bool map::initRoute(const char* answerFilePath)
 			getline(routeStream, infile);
 		else//否则按格式读取
 		{
-			//cout << i << "\t";
 			char str[10];
-			routeStream.getline(str, 10, ',');//读id
+			routeStream.getline(str, 10, ',');	//读id
 			id = std::atoi(str);
-			routeStream.getline(str, 10, ',');//读scheduledTime
-			carlist->getCar(id).realTime = std::atoi(str);
+			iter = &(carlist->getCar(id));
+
+			routeStream.getline(str, 10, ',');	//读scheduledTime
+			iter->realTime = std::atoi(str);
 			
 			while (1)
 			{
@@ -223,10 +191,23 @@ bool map::initRoute(const char* answerFilePath)
 					sum = sum * 10 + (one - 48);
 					one = routeStream.get();
 				}
-				carlist->getCar(id).routine->push_back(sum);
+				if(sum != 0)
+					iter->routine->push_back(sum);
 				if (one == ')')
 					break;
 			}
+			initRoad = iter->routine->at(0);
+			//获得车辆的起始路口
+			initCross = iter->deparID;
+			nextPoint = crosslist->nextPoint(
+				initCross, initRoad, roadMAPPINGfirst, roadMAPPINGsecond, roadMap);
+			if (nextPoint == -1)
+				throw 100;	//说明没有找到路口
+			posI = crosslist->getIndex(initCross);
+			posJ = crosslist->getIndex(nextPoint);
+
+			roadMap->at(posI).at(posJ).enQueue(*iter);	//将车辆放入就绪队列
+
 			one = routeStream.get();//读掉换行符
 			i++;
 		}
@@ -234,16 +215,21 @@ bool map::initRoute(const char* answerFilePath)
 	routeStream.close();
 }
 
-void map::binSort(int range)
-{	
-	//初始化
+void theMap::binSort(int range)
+{	//初始化
 	carTime = new vector<pair<int, int>>();
 	carTime->resize(carlist->size());
-	//对车辆按照出发时间进行桶排序
+	//对车辆按照出发时间进行桶排序，pair<车辆ID，车辆出发时间>
+	car *iter;
 	for (int index = 0; index < carlist->size(); index++)
 	{
-		carTime->at(index).first = index + carlist->firstID();
-		carTime->at(index).second = carlist->getCar(index+carlist->firstID()).planTime;
+		//这两行没用了
+		//carTime->at(index).first = index + carlist->firstID();
+		//carTime->at(index).second = carlist->getCar(index+carlist->firstID()).planTime;
+		iter = &(carlist->getCarByIndex(index));
+
+		carTime->at(index).first = iter->carID;
+		carTime->at(index).second = iter->planTime;
 	}
 	//计算总长度
 	int numberOfElements = carlist->size();
@@ -269,7 +255,7 @@ void map::binSort(int range)
 	}
 }
 
-void map::setCarStatus(int theSecond)
+void theMap::setCarStatus(int theSecond)
 {
 	//设定所有车辆的状态
 	//扫描所有车或者扫描所有路径，扫描车需要得到第一条路径，扫描路径需要得到第一条路径是本路径的车
@@ -299,7 +285,8 @@ void map::setCarStatus(int theSecond)
 								...
 			 channels,1 channels,2		   ...				channels,length
 			*/
-			int *flag = new int[trd.channels + 1];//判断同一车道前方是否有车的数组flag[m]=n表明第m车道第n个位置有车
+			//判断同一车道前方是否有车的数组flag[m]=n表明第m车道第n个位置有车
+			int *flag = new int[trd.channels + 1];
 			for (int index = 0; index <= trd.channels; index++)
 			{
 				flag[index] = 0;
@@ -313,7 +300,7 @@ void map::setCarStatus(int theSecond)
 					{//如果当前道路当前车道上有车
 						car& tcar = carlist->getCar(id);
 						int cspeed = trd.maxRoadSpeed > tcar.maxCarSpeed ? tcar.maxCarSpeed : trd.maxRoadSpeed;
-						if (flag[m] > n&&flag[m] <= (n + cspeed))
+						if (flag[m] > n && flag[m] <= (n + cspeed))
 						{//前方阻挡
 							int foreid = trd.roads[m][flag[m]];
 							tcar.status = carlist->getCar(foreid).status;
@@ -333,19 +320,16 @@ void map::setCarStatus(int theSecond)
 		}
 	}
 	//对每个路口将要出路口的车辆进行调度
-
-
-
 }
 
-int map::proBlockCars(int theSecond)
+int theMap::proBlockCars(int theSecond)
 {
 	//处理车辆并返回信息
 	//死锁返回路口编号，成功调度返回0，其他原因返回负数
 	return 0;
 }
 
-int map::simulate(int& totalTimes, int& finishTime)
+int theMap::simulate(int& totalTimes, int& finishTime)
 {
 	//调度之前要对车辆按照出发时间进行排序
 	//对车辆进行调度
@@ -406,4 +390,24 @@ int map::simulate(int& totalTimes, int& finishTime)
 	return deadLock;
 }
 
+void theMap::dispCars()
+{
+	int sum = 0;
+	int temp = 0;
+	road *iter = NULL;
+	for (int i = 0; i < crosslist->size(); i++)
+	{
+		for (int j = 0; j < crosslist->size(); j++)
+		{
+			iter = &(roadMap->at(i).at(j));
+			temp = iter->waitingGeneral.size() + iter->waitingPriority.size();
+			if (temp == 0)
+				continue;
+			cout << temp << "  ";
+			sum += temp;
+		}
+		cout << endl;
+	}
+	cout << "共: " << sum << " 辆车" << endl;
+}
 #endif

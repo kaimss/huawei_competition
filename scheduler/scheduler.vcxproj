@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{B5F6263D-1F65-4CDC-88D1-9A82F838DC3F}</ProjectGuid>
     <RootNamespace>scheduler</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -135,6 +135,7 @@
     <ClInclude Include="car.h" />
     <ClInclude Include="carList.h" />
     <ClInclude Include="cross.h" />
+    <ClInclude Include="crossList.h" />
     <ClInclude Include="dependencies.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="road.h" />

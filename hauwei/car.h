@@ -51,6 +51,4 @@ ostream& operator << (ostream &out, const car &p)
 	return out;
 }
 
-
-
 #endif

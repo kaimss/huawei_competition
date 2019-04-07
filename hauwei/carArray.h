@@ -113,11 +113,7 @@ bool carArray::iniCar2(const char* fileName)
 				carsets[i].isPreSet = isPreSet;
 				i++;
 			}
-
-
 			//cout << i << "  " << id << endl;
-
-			
 		}
 	}
 	carsets.resize(i);//调整容器大小

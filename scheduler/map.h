@@ -24,6 +24,7 @@ public:
 	//死锁返回路口编号，其他错误返回负值
 	int simulate(int& totalTimes, int& finishTime);
 	void dispCars();
+	void PriorityQueue();
 
 private:
 	int numRoads;			//道路的数量
@@ -42,6 +43,7 @@ private:
 	void binSort(int range);			//对车辆按照出发时间进行排序
 	void setCarStatus(int theSecond);	//更新所有车辆的状态
 	int proBlockCars(int theSecond);	//处理所有车辆
+	void driveCarInitList(const bool& priority);
 
 	//<道路 id, pair< 起点（下标）,终点（下标）>
 	map<int, pair<int,int> > *roadMAPPING;	//道路 id 到起点和终点的映射
@@ -122,6 +124,7 @@ bool theMap::initRoad(const char* roadFilePath)
 			numRoads++;
 
 			vector<int> temp(length + 1, 0);
+			temp[0] = length;
 			for (int i = 0; i <= channel; i++)
 				roadMap->at(posI).at(posJ).roads.push_back(temp);
 
@@ -134,7 +137,6 @@ bool theMap::initRoad(const char* roadFilePath)
 				//roadMap->at(dest).at(start).disp();	debug 用
 
 				numRoads++;
-				vector<int> temp(length + 1, 0);
 				for (int i = 0; i <= channel; i++)
 					roadMap->at(posJ).at(posI).roads.push_back(temp);
 			}
@@ -252,6 +254,24 @@ void theMap::binSort(int range)
 	}
 }
 
+void theMap::PriorityQueue()
+{
+	//debug用
+	int sum = 0;
+	int temp = 0;
+	road *iter = NULL;
+	for (int i = 0; i < crosslist->size(); i++)
+	{
+		for (int j = 0; j < crosslist->size(); j++)
+		{
+			cout << "(" << crosslist->getCrossByIndex(i).id << ",";
+			cout << crosslist->getCrossByIndex(j).id << ")" << " ";
+			iter = &(roadMap->at(i).at(j));
+			iter->popAll();
+		}
+	}
+}
+
 void theMap::setCarStatus(int theSecond)
 {
 	//设定所有车辆的状态
@@ -275,12 +295,14 @@ void theMap::setCarStatus(int theSecond)
 		for (int j = 1; j < roadMap->at(i).size(); j++)
 		{
 			road& trd = roadMap->at(i).at(j);
+			if (trd.length == 0)
+				break;
 			//对一条道路上每条车道上的所有车按顺序调度
 			/*
-			 1,1		1,2			1,3			...			1,length
-			 2,1		2,2			2,3			...			2,length
-								...
-			 channels,1 channels,2		   ...				channels,length
+			1,1			1,2			1,3			...			1,length			====>>
+			2,1			2,2			2,3			...			2,length			====>>
+			...			...			...			...			...					====>>
+			channels,1 channels,2	channels,3	...			channels,length		====>>
 			*/
 			//判断同一车道前方是否有车的数组flag[m]=n表明第m车道第n个位置有车
 			int *flag = new int[trd.channels + 1];
@@ -313,7 +335,7 @@ void theMap::setCarStatus(int theSecond)
 					}
 				}
 			}
-			delete[]flag;
+			delete[] flag;
 		}
 	}
 	//对每个路口将要出路口的车辆进行调度
@@ -323,7 +345,28 @@ int theMap::proBlockCars(int theSecond)
 {
 	//处理车辆并返回信息
 	//死锁返回路口编号，成功调度返回0，其他原因返回负数
+	//函数相当于图中的 driveCarInWaitState()
+	bool AllTerminate = false;	//所有车辆尚未到达终态
+	int roadsIDs[4] = { 0 };
+	while (!AllTerminate)
+	{
+		for (int i = 0; i < crosslist->size(); i++)
+		{
+			crosslist->getRoadsByIndex(i, roadsIDs);
+		}
+	}
 	return 0;
+}
+
+void theMap::driveCarInitList(const bool& priority)
+{
+	//设置上路车辆
+	//priority true 只上路优先车辆
+	//priority false 所有车辆都可以上路，但是优先车辆优先上路
+	for (/*对所有道路进行遍历*/;;)
+	{
+		//road.runCarInitList();
+	}
 }
 
 int theMap::simulate(int& totalTimes, int& finishTime)
@@ -338,8 +381,15 @@ int theMap::simulate(int& totalTimes, int& finishTime)
 	{
 		totalTimes++;
 		setCarStatus(totalTimes);	//设置所有车辆的状态
+		driveCarInitList(true);
 		blockPort = proBlockCars(totalTimes);	//处理所有状态为 WAITING 的车辆
-		//createCarSequence()	//生成优先级队列？
+		if (blockPort > 0)
+		{
+			cout << "死锁路口" << endl;
+			return blockPort;
+		}
+		driveCarInitList(false);
+												//createCarSequence()	//生成优先级队列？
 		//从carArray中找到所有的车辆，将马上要出发的车辆状态改为 WAITING
 		//按照路口遍历，处理车道上上所有正在运行的车辆
 		//如果有车辆要到达终点，状态改为 WAITING

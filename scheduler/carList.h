@@ -17,8 +17,7 @@ public:
 		//索引存放在容器 MAPPING 中
 		if (carsets->size() == 0)
 			throw UNKNOWN_METHOD;
-		map<int, int>::iterator iter;
-		iter = MAPPING->find(id);
+		map<int, int>::iterator iter = MAPPING->find(id);
 		if (iter != MAPPING->end())
 			return carsets->at((*iter).second);
 		else
@@ -38,7 +37,7 @@ public:
 private:
 	vector<car> *carsets;
 	ifstream carstream;
-	map<int, int> *MAPPING;	//用于查找
+	map<int, int> *MAPPING;	//用于查找，key 为车辆 ID，value 为车辆的下标
 };
 
 carList::carList(const char* filePath)

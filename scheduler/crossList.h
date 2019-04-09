@@ -83,7 +83,6 @@ crossList::crossList(const char* filePath)
 	}
 	crossets->resize(i);//调整容器大小
 	crosstream.close();
-
 }
 
 const cross& crossList::getCross(const int& id)

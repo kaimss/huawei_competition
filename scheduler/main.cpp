@@ -24,10 +24,12 @@ int main(int argc, char** argv)
 	cout << "result file path: " << argv[4] << endl;
 
 	theMap *thetheMap = new theMap(argv[2], argv[3], argv[1], argv[4]);
-	thetheMap->sortCars(100);
+	//thetheMap->PriorityQueue();
+	//thetheMap->sortCars(100);
 
-	int a, b;
-	bool deadLock = thetheMap->simulate(a, b);
+	int totalTimes = 0;
+	int finishingTime = 0;
+	bool deadLock = thetheMap->simulate(totalTimes, finishingTime);
 
 	return 0;
 }

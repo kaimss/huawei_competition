@@ -17,12 +17,12 @@ using std::operator>;
 
 struct queueNode
 {
-	int carID;
-	int depTime;
+	int carID;		//车辆 ID
+	int depTime;	//出发时间 departure time
 	queueNode(const int& x, const int& y) : carID(x), depTime(y) {}
 	friend bool operator < (const queueNode& theNode, const queueNode& theNode2)
 	{
-		return theNode2.depTime > theNode.depTime;
+		return theNode2.depTime < theNode.depTime;
 	}
 };
 
@@ -38,6 +38,7 @@ struct road
 	}
 
 	void enQueue(const car& theCar);
+	void popAll();
 
 	int id;				//道路 ID
 	int length;			//道路长度
@@ -58,6 +59,20 @@ void road::enQueue(const car& theCar)
 		waitingPriority.push(queueNode(theCar.carID, theCar.realTime));
 	else
 		waitingGeneral.push(queueNode(theCar.carID, theCar.realTime));
+}
+
+void road::popAll()
+{
+	if (waitingGeneral.empty())
+		return;
+	while (!waitingGeneral.empty())
+	{
+		queueNode theNode = waitingGeneral.top();
+		waitingGeneral.pop();
+
+		cout << theNode.depTime << "\t";
+	}
+	cout << endl;
 }
 
 #endif

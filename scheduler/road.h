@@ -40,6 +40,8 @@ struct road
 	void enQueue(const car& theCar);
 	void popAll();
 
+	bool processCars(const bool& option);
+
 	int id;				//道路 ID
 	int length;			//道路长度
 	int maxRoadSpeed;	//最大限速
@@ -75,4 +77,19 @@ void road::popAll()
 	cout << endl;
 }
 
+bool road::processCars(const bool& option)
+{
+	if (option)
+	{	//上路所有优先车辆
+		///------------------
+		///待完成
+		///------------------
+	}
+	else
+	{	//上路任意车辆
+		///------------------
+		///待完成
+		///------------------
+	}
+}
 #endif

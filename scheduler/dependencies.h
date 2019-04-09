@@ -12,12 +12,24 @@
 #include <cstdlib>
 #include <algorithm>
 
+#include <assert.h>
+
 #include "car.h"
 #include "cross.h"
 #include "road.h"
 
 #define UNKNOWN_METHOD 0xf1
 #define ILLEGAL_PARAMETER 0xf2
+
+const void ASSERT(const bool& exp, const string& theString)
+{
+	if (exp)
+	{
+		cout << theString << endl;
+		assert(exp);
+	}
+
+}
 
 typedef enum DIRECTION { UP, RIGHT, DOWN, LEFT };
 

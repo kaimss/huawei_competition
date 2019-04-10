@@ -2,9 +2,9 @@
 #ifndef _ROAD_
 #define _ROAD_
 
-#include <vector>
-#include <iostream>
 #include <queue>
+
+#include "dependencies.h"
 
 using std::vector;
 using std::queue;
@@ -22,7 +22,12 @@ struct queueNode
 	queueNode(const int& x, const int& y) : carID(x), depTime(y) {}
 	friend bool operator < (const queueNode& theNode, const queueNode& theNode2)
 	{
-		return theNode2.depTime < theNode.depTime;
+		if (theNode2.depTime < theNode.depTime)
+			return true;
+		else if (theNode2.depTime == theNode.depTime)
+			return theNode2.carID < theNode.carID;
+		else
+			return false;
 	}
 };
 
@@ -39,8 +44,6 @@ struct road
 
 	void enQueue(const car& theCar);
 	void popAll();
-
-	bool processCars(const bool& option);
 
 	int id;				//道路 ID
 	int length;			//道路长度
@@ -75,21 +78,5 @@ void road::popAll()
 		cout << theNode.depTime << "\t";
 	}
 	cout << endl;
-}
-
-bool road::processCars(const bool& option)
-{
-	if (option)
-	{	//上路所有优先车辆
-		///------------------
-		///待完成
-		///------------------
-	}
-	else
-	{	//上路任意车辆
-		///------------------
-		///待完成
-		///------------------
-	}
 }
 #endif

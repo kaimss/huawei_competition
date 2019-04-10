@@ -11,6 +11,7 @@
 #include <fstream>
 #include <cstdlib>
 #include <algorithm>
+#include <queue>
 
 #include <assert.h>
 
@@ -20,16 +21,6 @@
 
 #define UNKNOWN_METHOD 0xf1
 #define ILLEGAL_PARAMETER 0xf2
-
-const void ASSERT(const bool& exp, const string& theString)
-{
-	if (exp)
-	{
-		cout << theString << endl;
-		assert(exp);
-	}
-
-}
 
 typedef enum DIRECTION { UP, RIGHT, DOWN, LEFT };
 
@@ -44,5 +35,16 @@ using std::string;
 using std::ios;
 using std::pair;
 using std::map;
+using std::string;
+using std::queue;
+
+const void ASSERT(const bool& exp, const string& theString)
+{
+	if (exp)
+	{
+		cout << theString << endl;
+		assert(exp);
+	}
+}
 
 #endif

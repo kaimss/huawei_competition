@@ -43,7 +43,9 @@ private:
 	void binSort(int range);			//对车辆按照出发时间进行排序
 	void setCarStatus(int theSecond);	//更新所有车辆的状态
 	int proBlockCars(int theSecond);	//处理所有车辆
-	void driveCarInitList(const bool& priority);
+	void driveCarInitList(const bool& priority, const int& totalTimes);	//将车辆行驶到指定位置
+
+	bool processCars(const road& theRoad, const bool& option, const int& totalTimes);
 
 	//<道路 id, pair< 起点（下标）,终点（下标）>
 	map<int, pair<int,int> > *roadMAPPING;	//道路 id 到起点和终点的映射
@@ -345,7 +347,7 @@ int theMap::proBlockCars(int theSecond)
 	return 0;
 }
 
-void theMap::driveCarInitList(const bool& priority)
+void theMap::driveCarInitList(const bool& priority, const int& totalTimes)
 {
 	//设置上路车辆
 	//priority true 只上路优先车辆
@@ -364,12 +366,52 @@ void theMap::driveCarInitList(const bool& priority)
 				break;
 			map<int, pair<int, int> >::iterator iter = roadMAPPING->find(roadID);
 			//加入断言
-			ASSERT("没有查找到对应的道路, id = " + roadID, iter != roadMAPPING->end());
+			ASSERT( iter != roadMAPPING->end(), "没有查找到对应的道路, id = " + roadID);
 			//加入断言
 			road &theRoad = roadMap->at((*iter).second.first)[(*iter).second.second];
-			theRoad.processCars(priority);
+			bool result = processCars(theRoad, priority, totalTimes);
+
 		}
 	}
+}
+
+bool theMap::processCars(const road& theRoad, const bool& option, const int& totalTimes)
+{
+	//对道路 theRoad 上的所有车辆进行处理
+	//option决定上路的是优先车辆还是所有车辆
+	priority_queue<queueNode, vector<queueNode>, std::less<queueNode> > priority = theRoad.waitingPriority;
+	priority_queue<queueNode, vector<queueNode>, std::less<queueNode> > general = theRoad.waitingGeneral;
+	if (option)
+	{	//上路优先车辆
+		while (!priority.empty())
+		{
+			while (priority.top().depTime <= totalTimes)
+			{
+				queueNode carNode = priority.top();
+				car &theCar = carlist->getCar(carNode.carID);
+				int maxRoadSpeed = theRoad.maxRoadSpeed;
+				int maxCarSpeed = theCar.maxCarSpeed;
+				int s = min(maxRoadSpeed, maxCarSpeed);		//车辆的最大行驶距离
+				
+				for (int i = 1; i <= theRoad.channels; i++)
+				{
+					for (int j = 1; j <= s; j++)
+					{
+						///?????????????????????????????
+						//这应该是啥，出车只能上 1 车道吗，不过看样子貌似都可以
+						//这里的逻辑实在是不知道怎么搞了，求救
+
+					}
+				}
+			}
+		}
+	}
+	else
+	{	//所有车辆上路
+
+	}
+
+
 }
 
 int theMap::simulate(int& totalTimes, int& finishTime)
@@ -384,15 +426,15 @@ int theMap::simulate(int& totalTimes, int& finishTime)
 	{
 		totalTimes++;
 		setCarStatus(totalTimes);	//设置所有车辆的状态
-		driveCarInitList(true);		//
+		driveCarInitList(true, totalTimes);		//
 		blockPort = proBlockCars(totalTimes);	//处理所有状态为 WAITING 的车辆
 		if (blockPort > 0)
 		{
 			cout << "死锁路口" << endl;
 			return blockPort;
 		}
-		driveCarInitList(false);
-												//createCarSequence()	//生成优先级队列？
+		driveCarInitList(false, totalTimes);
+		//createCarSequence()	//生成优先级队列？
 		//从carArray中找到所有的车辆，将马上要出发的车辆状态改为 WAITING
 		//按照路口遍历，处理车道上上所有正在运行的车辆
 		//如果有车辆要到达终点，状态改为 WAITING

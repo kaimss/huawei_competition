@@ -14,7 +14,7 @@
 using namespace std;
 
 #define maxsecond 200//最大调度时间
-int min(int &a, int &b)
+const static int MIN(int &a, int &b)
 {
 	return a > b ? b : a;
 }
@@ -99,7 +99,7 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 			
 			edge &droad = graph.getEdge(acar.cfrom, acar.cto);//获取当前将要行驶的道路
 			acar.croad = droad.id;//目前行驶道路编号
-			acar.cspeed = min(droad.maxSpeed, acar.maxSpeed);//获得当前速度
+			acar.cspeed = MIN(droad.maxSpeed, acar.maxSpeed);//获得当前速度
 			droad.road[acar.cchannel][acar.cdistance] = acar.id;//将此车标记在道路上
 		}
 		else if (second > acar.planTime)
@@ -119,7 +119,7 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 				{//路口调度
 					int S1 = droad.length - acar.cdistance;
 					edge &ndroad = graph.getEdge(acar.cto, acar.dot[acar.i + 2]);
-					int S2 = min(acar.maxSpeed, ndroad.maxSpeed);
+					int S2 = MIN(acar.maxSpeed, ndroad.maxSpeed);
 				
 					if (S2 <= S1)
 					{//无法通过路口
@@ -147,7 +147,7 @@ void dispatch(adjacencyWDigraph &graph, car &acar)
 
 						droad.road[acar.cchannel][acar.cdistance] = 0;//清除在上一条道路的信息
 						acar.cdistance = S2 - S1;//目前行驶距离为S2-S1
-						acar.cspeed = min(ndroad.maxSpeed, acar.maxSpeed);//更新最大速度
+						acar.cspeed = MIN(ndroad.maxSpeed, acar.maxSpeed);//更新最大速度
 						ndroad.road[acar.cchannel][acar.cdistance] = acar.id;//更新在下一条道路的位置
 					}
 				}

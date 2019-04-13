@@ -16,7 +16,10 @@
 
 #define UNKNOWN_PROBLEM 1
 
-using namespace std;
+using std::cin;
+using std::cout;
+using std::endl;
+using std::vector;
 
 class adjacencyWDigraph
 {
@@ -128,22 +131,22 @@ adjacencyWDigraph::adjacencyWDigraph(const char* roadFilePath, const char* cross
 
 adjacencyWDigraph::~adjacencyWDigraph()
 {	//析构函数
-	cout << "地图删除中" << endl;
+	cout << "map deleting" << endl;
 	for (int i = 0; i <= numVertices; i++)
 		delete[] edgesets[i];
 
 	delete[] edgesets;
 	edgesets = NULL;
-	cout << "地图删除完毕" << endl;
+	cout << "map deleted success" << endl;
 }
 
 bool adjacencyWDigraph::iniRoad(const char* fileName)
 {	//初始化函数，将读入的文件填写到图中
-	cout << "读入文件：" << fileName << endl;
+	cout << "reading file:" << fileName << endl;
 	string infile;
 	crossAndroad.open(fileName, ios::in | ios::out);
 	if (!crossAndroad.is_open()) {
-		cout << "文件打开错误" << endl;
+		cout << "reading file error" << endl;
 		return false;
 	}
 	int id, channel, start, dest, length, maxSpeed, single;
@@ -186,18 +189,18 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 		}
 	}
 	crossAndroad.close();
-	cout << "文件读取完毕，已写入结构体，共 " << numEdges << " 条道路" << endl;
+	cout << "file finished，loaded in structure，total " << numEdges << "edges" << endl;
 	return true;
 }
 
 bool adjacencyWDigraph::iniRoad2(const char* fileName)
 {	//初始化函数，将读入的文件填写到图中
-	cout << "读入文件：" << fileName << endl;
+	cout << "load file:" << fileName << endl;
 	string infile;
 	char str[10], one;
 	crossAndroad.open(fileName, ios::in | ios::out);
 	if (!crossAndroad.is_open()) {
-		cout << "文件打开错误" << endl;
+		cout << "load file error" << endl;
 		return false;
 	}
 	int id, channel, start, dest, length, maxSpeed, single;
@@ -276,7 +279,7 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 	}
 	roads->resize(index);
 	crossAndroad.close();
-	cout << "文件读取完毕，已写入结构体，共 " << index << " 条道路" << endl;
+	cout << "file finished，loaded in structure，total " << index << " edges" << endl;
 	return true;
 }
 void adjacencyWDigraph::output()
@@ -290,7 +293,7 @@ void adjacencyWDigraph::output()
 }
 bool adjacencyWDigraph::iniCross(const char* crossFilePath)
 {
-	cout << "读入路口文件:" << crossFilePath << endl;
+	cout << "reading cross file:" << crossFilePath << endl;
 	crossMap = new vector<cross>();
 	//初始化函数，将读入的文件填写路口
 	string infile;
@@ -299,7 +302,7 @@ bool adjacencyWDigraph::iniCross(const char* crossFilePath)
 	crossMap->resize(200);	//初始化
 	crossAndroad.open(crossFilePath, ios::in | ios::out);
 	if (!crossAndroad.is_open()) {
-		cout << "文件打开错误" << endl;
+		cout << "loading file error" << endl;
 		//throw UNKNOWN_METHOD;
 		return false;
 	}
@@ -338,17 +341,17 @@ bool adjacencyWDigraph::iniCross(const char* crossFilePath)
 	numVertices = i;
 	crossMap->resize(i + 1);//调整容器大小
 	crossAndroad.close();
-	cout << "路口文件读入结束，共 " << i << " 个路口" << endl;
+	cout << "cross file loading finished, total " << i << "crosses" << endl;
 	return true;
 }
 bool adjacencyWDigraph::initPreset(const char* fileName, const char* fileName2)
 {	//初始化函数，将读入的预置车辆路径信息写入answer.txt文件
-	cout << "读入预置车辆文件:" << fileName << endl;
+	cout << "loading preset cars file: " << fileName << endl;
 	string infile;
 	char str[10], one;
 	crossAndroad.open(fileName, ios::in | ios::out);
 	if (!crossAndroad.is_open()) {
-		cout << "文件打开错误" << endl;
+		cout << "file loading error" << endl;
 		throw UNKNOWN_PROBLEM;
 	}
 	int id, scheduledTime;
@@ -412,13 +415,13 @@ bool adjacencyWDigraph::initPreset(const char* fileName, const char* fileName2)
 	}
 	crossAndroad.close();
 	carstream.close();
-	cout << "预置车辆已写入文件:" << fileName2 << endl;
+	cout << "preset file loading finished:" << fileName2 << endl;
 }
 //动态寻找所有顶点对之间的最短路径
 void adjacencyWDigraph::allpairs(float **c, int **kay)
 {	//初始化c[i][j]
-	cout << "最短路径生成算法 floyd" << endl;
-	cout << "初始化 c 矩阵" << endl;
+	cout << "shortest file seek algorithm floyd" << endl;
+	cout << "init c matrix" << endl;
 	for (int i = 1; i <= numVertices; i++)
 	{
 		for (int j = 1; j <= numVertices; j++)
@@ -427,13 +430,13 @@ void adjacencyWDigraph::allpairs(float **c, int **kay)
 			kay[i][j] = 0;
 		}
 	}
-	cout << "对角线归零" << endl;
+	cout << "diag turn 0" << endl;
 	for (int i = 1; i <= numVertices; i++)
 	{
 		c[i][i] = 0;
 	}
 	//计算c[o][j]=c(i,j,k)，即从i到j的路径长度等于从i到j经过k的路径长度
-	cout << "计算两者之间的最短路" << endl;
+	cout << "shortest path" << endl;
 	for (int k = 1; k <= numVertices; k++)
 		for (int i = 1; i <= numVertices; i++)
 			for (int j = 1; j <= numVertices; j++)
@@ -443,14 +446,14 @@ void adjacencyWDigraph::allpairs(float **c, int **kay)
 					c[i][j] = c[i][k] + c[k][j];
 					kay[i][j] = k;
 				}
-	cout << "最短路计算结束" << endl;
+	cout << "shortest path cal finished" << endl;
 }
 
 //暂时的动态调度
 void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 {
-	cout << "动态规划开始" << endl;
-	cout << "初始化 c 矩阵" << endl;
+	cout << "dynamic finished" << endl;
+	cout << "init c matrix" << endl;
 	float **c = new float*[numVertices +1];
 	for (int i = 0; i <= numVertices; i++)
 		c[i] = new float[numVertices + 1];
@@ -480,7 +483,7 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 	//carstream.close();
 	carstream.open(path, ios::app);
 	//car tempcar;
-	cout << "动态求最短路，修改路径策略" << endl;
+	cout << "dynamic seek shortest path，modify shortest path algo" << endl;
 	for (int m = carsets.getNumber() - 1; m >= 0; m--)
 	{
 		car &acar = carsets.getCar(m);//
@@ -563,9 +566,9 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets)
 		carstream << acar.path[acar.path.size() - 1] << ")\n";
 		//cout << xx++ << "\n";
 	}
-	cout << "删除 distanceFromSource 数组" << endl;
+	cout << "delete distanceFromSource array" << endl;
 	delete [] distanceFromSource;
-	cout << "删除 predecessor 数组" << endl;
+	cout << "delete predecessor array" << endl;
 	delete [] predecessor;
 
 	//carstream.open(path, ios::out);

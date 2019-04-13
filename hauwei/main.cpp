@@ -53,7 +53,7 @@ int main(int argc, char** argv)
 	//cars.iniCar("data1//car_process.txt");
 	cars.iniCar2(argv[1]);
 	//未处理文件读取
-	//vector<pair<int ,int>> carTime(cars.getNumber());	///这个需要改动，因为未知车辆数量
+	vector<pair<int ,int>> carTime(cars.getNumber());	///这个需要改动，因为未知车辆数量
 	float **a;
 	int **b;
 	a = new float*[graph.getNumber() + 1];		///这个需要改
@@ -64,7 +64,7 @@ int main(int argc, char** argv)
 		b[i] = new int[graph.getNumber() + 1];			///这个需要改
 	}
 
-	//graph.allpairs(a,b);
+	graph.allpairs(a,b);
 	/*for (int index = 0; index < 10240; index++)
 	{
 		//int index = 1;

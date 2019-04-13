@@ -18,15 +18,19 @@ public:
 
 	car& getCar(int i);//返回第i辆车
 	int getNumber();//返回车辆数目
+	int getmaxplantime();//返回最大出发时间
 	void pop_back();
 	car back();
 	void push_back(car tcar);
+	
+	
 
 private:
 	//vector<car> carsets(contianer);//需要给定一个初始化值以减少后面push_back的次数而减少时间
 						   //有错，在声明.h 文件中不能直接调用vector类的析构函数赋值，需要在其他函数中声明大小
 	vector<car> carsets;//车辆集合
 	ifstream carstream;//读取car.txt文件流
+	int maxplantime = 0;
 };
 bool carArray::iniCar(const char* fileName)
 {
@@ -91,7 +95,10 @@ bool carArray::iniCar2(const char* fileName)
 			speed = std::atoi(str);
 
 			carstream.getline(str, 10, ',');
-			planTime = std::atoi(str);			
+			planTime = std::atoi(str);	
+
+			if(planTime > maxplantime)
+				maxplantime = planTime;
 
 			carstream.getline(str, 10, ',');
 			isPriority = std::atoi(str) == 1 ? true : false;
@@ -129,6 +136,10 @@ int carArray::getNumber()
 {
 	return carsets.size();
 }
+int carArray::getmaxplantime()
+{
+	return maxplantime;
+}
 void carArray::pop_back()
 {
 	carsets.pop_back();
@@ -142,14 +153,14 @@ void carArray::push_back(car tcar)
 	carsets.push_back(tcar);
 
 }
-void binSort(carArray& carTime,int range)
+void binSort(carArray& carTime)
 {
 	//for (int index = 0; index < 10240; index++)
 	//{
 	//	carTime[index].first = index + 10000;
 	//	carTime[index].second = cars.getCar(index).planTime;
 	//}
-
+	int range = carTime.getmaxplantime() + 1;
 	int numberOfElements = carTime.getNumber();
 	vector<car> one;
 	vector<vector<car>> cars(range, one);

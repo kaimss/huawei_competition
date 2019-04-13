@@ -37,6 +37,9 @@ public:
 
 	bool initPreset(const char* fileName, const char* fileName2);
 
+	void setCarArray(carArray *theCarArray) { this->theCarArray = theCarArray; }
+
+
 	void output();//输出矩阵
 	void allpairs(float **, int **);//任意两点之间的最短路径
 	void shortestPaths(float** c, int sourceVertex, float* distanceFromSource, int* predecessor);//两点间最短路径
@@ -57,6 +60,8 @@ private:
 	int **carTime;		//车辆到达的时间（最短路径算法）
 	ofstream out;
 	edge **edgesets;	//边集
+	
+	carArray *theCarArray;
 
 	vector<cross> *crossMap;		//路口集合
 	vector<road> *roads;			//道路集合
@@ -69,6 +74,30 @@ private:
 	vector<int> projectCross;
 
 	int getCidp(int CrossId);		//通过路口id获取索引，如果没有返回-1
+
+
+
+	struct queueNode
+	{
+		int ID;
+		int scheduledTime;
+		int totalLength;
+		queueNode(int theID, int theTime, int theLength) :
+			ID(theID), scheduledTime(theTime), totalLength(theLength) {}
+		friend bool operator < (const queueNode& node1, const queueNode& node2)
+		{
+			int judge1 = 0.5 * node1.scheduledTime + 0.5 * node1.totalLength;
+			int judge2 = 0.5 * node2.scheduledTime + 0.5 * node2.totalLength;
+			if (judge1 < judge2)
+				return true;
+			else if (judge1 == judge2)
+				return node1.ID < node2.ID;
+			else
+				return false;
+		}
+	};
+
+	priority_queue<queueNode, vector<queueNode>, std::less<queueNode> > presetQueue;
 
 };
 adjacencyWDigraph::adjacencyWDigraph(const char* roadFilePath, const char* crossFilePath)
@@ -357,6 +386,7 @@ bool adjacencyWDigraph::initPreset(const char* fileName, const char* fileName2)
 	int id, scheduledTime;
 	int sum = 0;
 	int m = 0;
+	int index = 0;
 
 	while (!crossAndroad.eof())
 	{
@@ -374,8 +404,8 @@ bool adjacencyWDigraph::initPreset(const char* fileName, const char* fileName2)
 			scheduledTime = std::atoi(str);
 
 			//debug 用，生成的时间太久了
-			cout << m++ << "\t";
 
+			index = 0;
 			while (1)
 			{
 				sum = 0;
@@ -386,6 +416,8 @@ bool adjacencyWDigraph::initPreset(const char* fileName, const char* fileName2)
 					one = crossAndroad.get();
 
 				}
+				index++;
+				
 				//一些加权措施
 				for (int i = 0; i < roads->size(); i++)
 				{
@@ -401,9 +433,21 @@ bool adjacencyWDigraph::initPreset(const char* fileName, const char* fileName2)
 			}
 			one = crossAndroad.get();//读掉换行符
 			//m++;
+
+			//将读到的plantime和计算的roadlength根据优先级队列排序
+			presetQueue.push(queueNode(id, scheduledTime, index));
 		}
 	}
 	crossAndroad.close();
+
+	for (int i = 0; i < 300; i++)
+	{
+		cout << i << "\t";
+		queueNode theNode = presetQueue.top();
+		presetQueue.pop();
+		car &thePresetCar = theCarArray->getPresetCar(theNode.ID);
+		theCarArray->push_back(thePresetCar);
+	}
 
 	//重新打开并且写入answer.txt
 	/*crossAndroad.open(fileName, ios::in | ios::out);

@@ -7,6 +7,8 @@
 #include <string>
 #include <stdlib.h>
 #include <time.h>
+#include <map>
+#include <queue>
 
 #include "car.h"
 using namespace std;
@@ -22,16 +24,23 @@ public:
 	car& getCar(int i);//返回第i辆车
 	int getNumber();//返回车辆数目
 	int getmaxplantime();//返回最大出发时间
+	car& getPresetCar(int id);//返回编号为id的预置车辆的信息
+
+
 	void pop_back();
 	car back();
 	void push_back(car tcar);
 	
-	
+	void binsortwithperset();//对预置车辆按出发时间和/或路径长度排序
 
 private:
 	//vector<car> carsets(contianer);//需要给定一个初始化值以减少后面push_back的次数而减少时间
 						   //有错，在声明.h 文件中不能直接调用vector类的析构函数赋值，需要在其他函数中声明大小
 	vector<car> carsets;//车辆集合
+	vector<car> presetcars;//预置车辆集合
+	map<int, int> projection;	//保存预置车辆的 ID 和下标
+
+
 	ifstream carstream;//读取car.txt文件流
 	int maxplantime = 0;//最大非预置车辆出行时间
 	int persetnumber = 0;//预置车数量
@@ -72,6 +81,7 @@ bool carArray::iniCar2(const char* fileName)
 	//初始化函数，将读入的文件填写到车数组中
 	string infile;
 	char str[10], one;
+	presetcars.resize(5000);
 	carsets.resize(CONTAINER);//初始化有container辆车，后面可以修改大小
 	carstream.open(fileName, ios::in | ios::out);
 	if (!carstream.is_open()) {
@@ -129,26 +139,24 @@ bool carArray::iniCar2(const char* fileName)
 			}
 			else
 			{
-				if ((npernumber % 10 + rand() % 9) == 0)
-				{
-					carsets[i].id = id;
-					carsets[i].from = from;
-					carsets[i].to = to;
-					carsets[i].maxSpeed = speed;
-					carsets[i].planTime = planTime;
-					carsets[i].isPriority = isPriority;
-					carsets[i].isPreSet = isPreSet;
-					i++;
-				}
+				presetcars[npernumber].id = id;
+				presetcars[npernumber].from = from;
+				presetcars[npernumber].to = to;
+				presetcars[npernumber].maxSpeed = speed;
+				presetcars[npernumber].planTime = planTime;
+				presetcars[npernumber].isPriority = isPriority;
+				presetcars[npernumber].isPreSet = isPreSet;
 
-
+				projection.insert(pair<int, int>(id, npernumber));
 
 				npernumber++;
 			}
 			//cout << i << "  " << id << endl;
 		}
 	}
+
 	carsets.resize(i);//调整容器大小
+	presetcars.resize(npernumber);
 	carstream.close();
 	return true;
 }
@@ -165,6 +173,13 @@ int carArray::getmaxplantime()
 {
 	return maxplantime;
 }
+car& carArray::getPresetCar(int id)
+{
+	map<int, int>::iterator iter = projection.find(id);
+	int index = (*iter).second;
+	return presetcars[index];
+	
+}
 void carArray::pop_back()
 {
 	carsets.pop_back();
@@ -176,6 +191,14 @@ car carArray::back()
 void carArray::push_back(car tcar)
 {
 	carsets.push_back(tcar);
+}
+
+void carArray::binsortwithperset()
+{
+
+
+
+
 
 }
 void binSort(carArray& carTime)

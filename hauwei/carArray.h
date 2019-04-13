@@ -5,6 +5,9 @@
 #include <vector>
 #include <iostream>
 #include <string>
+#include <stdlib.h>
+#include <time.h>
+
 #include "car.h"
 using namespace std;
 
@@ -30,7 +33,9 @@ private:
 						   //有错，在声明.h 文件中不能直接调用vector类的析构函数赋值，需要在其他函数中声明大小
 	vector<car> carsets;//车辆集合
 	ifstream carstream;//读取car.txt文件流
-	int maxplantime = 0;
+	int maxplantime = 0;//最大非预置车辆出行时间
+	int persetnumber = 0;//预置车数量
+	int npernumber = 0;//非预置车数量
 };
 bool carArray::iniCar(const char* fileName)
 {
@@ -63,6 +68,7 @@ bool carArray::iniCar(const char* fileName)
 }
 bool carArray::iniCar2(const char* fileName)
 {
+	srand((unsigned int)time(NULL));
 	//初始化函数，将读入的文件填写到车数组中
 	string infile;
 	char str[10], one;
@@ -74,7 +80,7 @@ bool carArray::iniCar2(const char* fileName)
 	}
 	int id, from, to, speed, planTime;
 	bool isPriority, isPreSet;
-	int i = 0;//行计数器，用于重新调整vector容器大小
+	int i = 0;//行计数器，用于重新调整vector容器大小    //也即非预置车辆的树目
 	while (!carstream.eof())
 	{
 		one = carstream.get();//读掉左括号或者'#'
@@ -119,6 +125,25 @@ bool carArray::iniCar2(const char* fileName)
 				carsets[i].isPriority = isPriority;
 				carsets[i].isPreSet = isPreSet;
 				i++;
+				persetnumber++;
+			}
+			else
+			{
+				if ((npernumber % 10 + rand() % 9) == 0)
+				{
+					carsets[i].id = id;
+					carsets[i].from = from;
+					carsets[i].to = to;
+					carsets[i].maxSpeed = speed;
+					carsets[i].planTime = planTime;
+					carsets[i].isPriority = isPriority;
+					carsets[i].isPreSet = isPreSet;
+					i++;
+				}
+
+
+
+				npernumber++;
 			}
 			//cout << i << "  " << id << endl;
 		}

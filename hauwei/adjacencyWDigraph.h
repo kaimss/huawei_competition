@@ -406,7 +406,7 @@ bool adjacencyWDigraph::initPreset(const char* fileName, const char* fileName2)
 	crossAndroad.close();
 
 	//重新打开并且写入answer.txt
-	crossAndroad.open(fileName, ios::in | ios::out);
+	/*crossAndroad.open(fileName, ios::in | ios::out);
 	carstream.open(fileName2, ios::in | ios::out);
 	while (!crossAndroad.eof())
 	{
@@ -415,7 +415,7 @@ bool adjacencyWDigraph::initPreset(const char* fileName, const char* fileName2)
 	}
 	crossAndroad.close();
 	carstream.close();
-	cout << "preset file loading finished:" << fileName2 << endl;
+	cout << "preset file loading finished:" << fileName2 << endl;*/
 }
 //动态寻找所有顶点对之间的最短路径
 void adjacencyWDigraph::allpairs(float **c, int **kay)

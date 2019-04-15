@@ -38,7 +38,7 @@ private:
 						   //有错，在声明.h 文件中不能直接调用vector类的析构函数赋值，需要在其他函数中声明大小
 	vector<car> carsets;//车辆集合
 	vector<car> presetcars;//预置车辆集合
-	map<int, int> projection;	//保存预置车辆的 ID 和下标
+	map<int, int> *projection;	//保存预置车辆的 ID 和下标
 
 
 	ifstream carstream;//读取car.txt文件流
@@ -77,6 +77,7 @@ bool carArray::iniCar(const char* fileName)
 }
 bool carArray::iniCar2(const char* fileName)
 {
+	projection = new std::map<int, int>();
 	srand((unsigned int)time(NULL));
 	//初始化函数，将读入的文件填写到车数组中
 	string infile;
@@ -147,7 +148,7 @@ bool carArray::iniCar2(const char* fileName)
 				presetcars[npernumber].isPriority = isPriority;
 				presetcars[npernumber].isPreSet = isPreSet;
 
-				projection.insert(pair<int, int>(id, npernumber));
+				projection->insert(pair<int, int>(id, npernumber));
 
 				npernumber++;
 			}
@@ -175,7 +176,7 @@ int carArray::getmaxplantime()
 }
 car& carArray::getPresetCar(int id)
 {
-	map<int, int>::iterator iter = projection.find(id);
+	map<int, int>::iterator iter = projection->find(id);
 	int index = (*iter).second;
 	return presetcars[index];
 	

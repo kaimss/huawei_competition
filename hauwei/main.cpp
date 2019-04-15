@@ -41,6 +41,10 @@ int main(int argc, char** argv)
 
 	adjacencyWDigraph graph(argv[2], argv[3]);		//
 
+	carArray cars;
+	//cars.iniCar("data1//car_process.txt");
+	cars.iniCar2(argv[1]);
+
 	graph.initPreset(argv[4], argv[5]);//读取预置车辆路径并按规则加入优先级队列
 	//graph.iniRoad("data1//road_process.txt");
 	//graph.iniCross(argv[3]);
@@ -49,13 +53,11 @@ int main(int argc, char** argv)
 	//未处理文件读取
 	//graph.output();
 
-	carArray cars;
-	//cars.iniCar("data1//car_process.txt");
-	cars.iniCar2(argv[1]);
+
 
 	graph.setCarArray(&cars);
 	//未处理文件读取
-	vector<pair<int ,int>> carTime(cars.getNumber());	///这个需要改动，因为未知车辆数量
+	//vector<pair<int ,int>> carTime(cars.getNumber());	///这个需要改动，因为未知车辆数量
 	float **a;
 	int **b;
 	a = new float*[graph.getNumber() + 1];		///这个需要改

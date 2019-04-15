@@ -84,20 +84,16 @@ adjacencyWDigraph::adjacencyWDigraph(int numOfVertices)
 }
 
 adjacencyWDigraph::~adjacencyWDigraph()
-{
-	//析构函数
-	
+{	//析构函数
 	for (int i = 0; i <= numVertices; i++)
 		delete[] edgesets[i];
 
 	delete[] edgesets;
 	edgesets = NULL;
-	
 }
 
 bool adjacencyWDigraph::iniRoad(const char* fileName)
-{
-	//初始化函数，将读入的文件填写到图中
+{	//初始化函数，将读入的文件填写到图中
 	string infile;
 	crossAndroad.open(fileName, ios::in | ios::out);
 	if (!crossAndroad.is_open()) {
@@ -125,7 +121,6 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 			insert->road.push_back(temp);
 		}
 		
-
 		//如果是双向车道的道路
 		if (single == 1)
 		{
@@ -147,6 +142,7 @@ bool adjacencyWDigraph::iniRoad(const char* fileName)
 	crossAndroad.close();
 	return true;
 }
+
 bool adjacencyWDigraph::iniRoad2(const char* fileName)
 {
 	//初始化函数，将读入的文件填写到图中
@@ -218,7 +214,6 @@ bool adjacencyWDigraph::iniRoad2(const char* fileName)
 				}
 			}
 		}
-		
 	}
 	crossAndroad.close();
 	return true;
@@ -262,7 +257,7 @@ void adjacencyWDigraph::allpairs(float **c, int **kay)
 				}
 }
 
-//
+//暂时的动态调度
 void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair<int, int>>  &carTime)
 {
 
@@ -304,12 +299,16 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 			{
 				if (edgesets[i][j].maxSpeed != 0)
 				{
-					if(edgesets[i][j].maxSpeed < acar.maxSpeed)
-					   c[i][j] += (float) (acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
+					//添加车辆限速对路径的影响
+					if (edgesets[i][j].maxSpeed < acar.maxSpeed)
+						c[i][j] += (float)(acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
+					if (edgesets[i][j].maxSpeed != 0)
+						c[i][j] += (edgesets[i][j].road[0][0]) / (edgesets[i][j].length * edgesets[i][j].channel);
 				}
 				    
 			}
 		}
+
 		shortestPaths(c, acar.from, distanceFromSource, predecessor);//通过c就算两点间最短距离
 
 		
@@ -321,16 +320,18 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 			{
 				if (edgesets[i][j].maxSpeed < acar.maxSpeed)
 					c[i][j] -= (float)(acar.maxSpeed - edgesets[i][j].maxSpeed) / (float)(acar.maxSpeed);
+				if(edgesets[i][j].maxSpeed != 0)
+					c[i][j] -= (edgesets[i][j].road[0][0]) / (edgesets[i][j].length * edgesets[i][j].channel);
 			}
 		}
 
 
-		if (distanceFromSource[destination] + 1 > INF)
-		{
-			cout << "noreachable\n";
-			throw UNKNOWN_PROBLEM;
-			exit(1);
-		}
+		//if (distanceFromSource[destination] + 1 > INF)
+		//{
+		//	cout << "noreachable\n";
+		//	throw UNKNOWN_PROBLEM;
+		//	exit(1);
+		//}
 
 
 
@@ -352,7 +353,9 @@ void adjacencyWDigraph::dynamicselect(char* path, carArray& carsets, vector<pair
 			acar.path[i] = edgesets[acar.dot[i]][acar.dot[i + 1]].id;
 
 			//更新c[i][j]
-			//(edgesets[acar.dot[i]][acar.dot[i + 1]].road[0][0])++;
+			edge &tempedge = edgesets[acar.dot[i]][acar.dot[i + 1]];
+			(tempedge.road[0][0])++;
+			c[acar.dot[i]][acar.dot[i + 1]] += 0.1;
 
 		}
 		
@@ -508,7 +511,7 @@ void adjacencyWDigraph::outputPathFile(char* path, float **c, int **kay, int k,i
 			out << "there is  no path from " << i << "to" << j << endl;
 		else
 		{
-			out <<"("<<k<<","<< h+(count%500)<<",";
+			out <<"("<<k<<","<< h<<",";
 			//carTime[k - 10000][0] = k;
 			//carTime[k - 10000][1] = h;
 			outputPathFile(path, kay, i, j,j);
@@ -525,7 +528,8 @@ void adjacencyWDigraph::output(char* path, float **c, int **kay, carArray &cars,
 	out.open(path, ios::out);
 	out.close();
 	out.open(path, ios::app);
-	for (int i = cars.getNumber()-1; i >=0; i--)
+	for (int i = 0; i < cars.getNumber(); i++)
+	//for (int i = cars.getNumber()-1; i >=0; i--)
 		if (out)
 			outputPathFile(path, c, kay, cars.getCar(i).id, cars.getCar(i).planTime, cars.getCar(i).from, cars.getCar(i).to,count);
 	out.close();

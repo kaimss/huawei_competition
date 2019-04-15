@@ -77,7 +77,7 @@ bool carArray::iniCar2(const char* fileName)
 			carstream.getline(str, 10, ',');
 			id = std::atoi(str);
 
-			carstream.getline(str, 10, ',');
+			carstream.getline(str, 5, ',');
 			from = std::atoi(str);
 
 			carstream.getline(str, 10, ',');
@@ -117,6 +117,12 @@ int carArray::getNumber()
 
 void binSort(vector<pair<int,int>>& carTime,int range)
 {
+	for (int index = 0; index < 10240; index++)
+	{
+		carTime[index].first = index + 10000;
+		carTime[index].second = cars.getCar(index).planTime;
+	}
+
 	int numberOfElements = carTime.size();
 	vector<pair<int, int>> one;
 	vector<vector<pair<int, int>>> car(range, one);
